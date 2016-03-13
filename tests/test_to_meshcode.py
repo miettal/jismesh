@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from mesh.utils import to_meshcode
+from jismesh.utils import to_meshcode
 
 class TestToMeshcode(unittest.TestCase):
     # 東京タワー緯度 (度) 世界測地系

@@ -4,7 +4,7 @@
 from __future__ import division
 
 import unittest
-from mesh.utils import to_meshpoint
+from jismesh.utils import to_meshpoint
 
 class TestToMeshpoint(unittest.TestCase):
 
