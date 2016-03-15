@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(name='jismesh',
       packages=['jismesh'],
-      version='1.0.1',
+      version='1.1.0',
       author='Haruki Nishikawa',
       author_email='harukinishikawa84@hotmail.com',
       url='https://github.com/hni14/jismesh',
