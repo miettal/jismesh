@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division
-import functools
+import sys
+if sys.version_info.major < 3:
+    import functools32 as functools
+else:
+    import functools
 
 # unit in degree of latitude and longitude for each mesh level. 
 unit_lat_lv1 = functools.lru_cache(1)(lambda: 2/3)
