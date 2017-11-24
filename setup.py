@@ -12,6 +12,11 @@ setup(name='jismesh',
       keywords = ['mesh'],
       description='Utilities for area mesh code defined in Japanese Industorial Standards (JIS X 0410 地域メッシュコード).',
       license = 'MIT',
+      extras_require={
+         ':python_version < "3.0"': [
+            'functools32',
+         ],
+      },
       classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
