@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nosetests
 # -*- coding: utf-8 -*-
 
 import unittest
@@ -21,178 +21,198 @@ class TestToMeshcode(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_to_meshcode_illigal_lvel(self):
+    def test_invalid_latitude(self):
         self.assertRaises(
-                ValueError, 
-                lambda: to_meshcode(
-                            lat=self.lat_tokyo_tower,
-                            lon=self.lon_tokyo_tower,
-                            level=0)
-                )
+            ValueError,
+            lambda: to_meshcode(
+                lat=-0.1,
+                lon=self.lon_tokyo_tower,
+                level=1))
+
+        self.assertRaises(
+            ValueError,
+            lambda: to_meshcode(
+                lat=66.66,
+                lon=self.lon_tokyo_tower,
+                level=1))
+
+    def test_invalid_longitude(self):
+        self.assertRaises(
+            ValueError,
+            lambda: to_meshcode(
+                lat=self.lat_tokyo_tower,
+                lon=99.99,
+                level=1))
+
+        self.assertRaises(
+            ValueError,
+            lambda: to_meshcode(
+                lat=self.lat_tokyo_tower,
+                lon=180,
+                level=1))
+
+    def test_unsupported_level(self):
+        self.assertRaises(
+            ValueError,
+            lambda: to_meshcode(
+                lat=self.lat_tokyo_tower,
+                lon=self.lon_tokyo_tower,
+                level=0))
 
     def _test_to_meshcode_helper(self, expected_meshcode, lat, lon, level):
         meshcode = to_meshcode(lat=lat, lon=lon, level=level)
         self.assertEqual(expected_meshcode, meshcode)
 
-    def test_to_meshcode_lv1_tokyo_tower(self):
+    def test_lv1_tokyo_tower(self):
         self._test_to_meshcode_helper(
-                expected_meshcode='5339',
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=1)
+            expected_meshcode='5339',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=1)
 
-    def test_to_meshcode_lv2_tokyo_tower(self):
-        meshcode_lv2 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=2)
+    def test_40000_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='53392',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=40000)
 
-        expected_meshcode_lv2 = '533935'
-        self.assertEqual(expected_meshcode_lv2, meshcode_lv2)
-    
-    def test_to_meshcode_5000_tokyo_tower(self):
-        meshcode_5000 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=5000)
+    def test_20000_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5339235',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=20000)
 
-        expected_meshcode_5000 = '5339354'
-        self.assertEqual(expected_meshcode_5000, meshcode_5000)
+    def test_lv2_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='533935',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=2)
 
-    def test_to_meshcode_2000_tokyo_tower(self):
-        meshcode_2000 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=2000)
+    def test_5000_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5339354',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=5000)
 
-        expected_meshcode_2000 = '533935885'
-        self.assertEqual(expected_meshcode_2000, meshcode_2000)
+    def test_2500_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='533935446',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=2500)
 
-    def test_to_meshcode_lv3_tokyo_tower(self):
-        meshcode_lv3 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=3)
+    def test_2000_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='533935885',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=2000)
 
-        expected_meshcode_lv3 = '53393599'
-        self.assertEqual(expected_meshcode_lv3, meshcode_lv3)
+    def test_lv3_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='53393599',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=3)
 
-    def test_to_meshcode_lv4_tokyo_tower(self):
-        meshcode_lv4 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=4)
+    def test_lv4_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='533935992',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=4)
 
-        expected_meshcode_lv4 = '533935992'
-        self.assertEqual(expected_meshcode_lv4, meshcode_lv4)
+    def test_lv5_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5339359921',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=5)
 
-    def test_to_meshcode_lv5_tokyo_tower(self):
-        meshcode_lv5 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=5)
+    def test_lv6_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='53393599212',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=6)
 
-        expected_meshcode_lv5 = '5339359921'
-        self.assertEqual(expected_meshcode_lv5, meshcode_lv5)
+    def test_lv1_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5235',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=1)
 
-    def test_to_meshcode_lv6_tokyo_tower(self):
-        meshcode_lv6 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=6)
+    def test_40000_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='52352',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=40000)
 
-        expected_meshcode_lv6 = '53393599212'
-        self.assertEqual(expected_meshcode_lv6, meshcode_lv6)
+    def test_20000_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5235245',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=20000)
 
-    def test_to_meshcode_100_tokyo_tower(self):
-        meshcode_100 = to_meshcode(
-                lat=self.lat_tokyo_tower,
-                lon=self.lon_tokyo_tower,
-                level=100)
+    def test_lv2_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='523536',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=2)
 
-        expected_meshcode_100 = '5339359906'
-        self.assertEqual(expected_meshcode_100, meshcode_100)
+    def test_5000_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5235363',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=5000)
 
-    def test_to_meshcode_lv1_kyoto_tower(self):
-        meshcode_lv1 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=1)
+    def test_2500_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='523536336',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=2500)
 
-        expected_meshcode_lv1 = '5235'
-        self.assertEqual(expected_meshcode_lv1, meshcode_lv1)
+    def test_2000_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='523536805',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=2000)
 
-    def test_to_meshcode_lv2_kyoto_tower(self):
-        meshcode_lv2 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=2)
+    def test_lv3_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='52353680',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=3)
 
-        expected_meshcode_lv2 = '523536'
-        self.assertEqual(expected_meshcode_lv2, meshcode_lv2)
+    def test_lv4_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='523536804',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=4)
 
-    def test_to_meshcode_5000_kyoto_tower(self):
-        meshcode_5000 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=5000)
+    def test_lv5_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5235368041',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=5)
 
-        expected_meshcode_5000 = '5235363'
-        self.assertEqual(expected_meshcode_5000, meshcode_5000)
-
-    def test_to_meshcode_2000_kyoto_tower(self):
-        meshcode_2000 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=2000)
-
-        expected_meshcode_2000 = '523536805'
-        self.assertEqual(expected_meshcode_2000, meshcode_2000)
-
-    def test_to_meshcode_lv3_kyoto_tower(self):
-        meshcode_lv3 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=3)
-
-        expected_meshcode_lv3 = '52353680'
-        self.assertEqual(expected_meshcode_lv3, meshcode_lv3)
-
-    def test_to_meshcode_lv4_kyoto_tower(self):
-        meshcode_lv4 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=4)
-
-        expected_meshcode_lv4 = '523536804'
-        self.assertEqual(expected_meshcode_lv4, meshcode_lv4)
-
-    def test_to_meshcode_lv5_kyoto_tower(self):
-        meshcode_lv5 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=5)
-
-        expected_meshcode_lv5 = '5235368041'
-        self.assertEqual(expected_meshcode_lv5, meshcode_lv5)
-
-    def test_to_meshcode_lv6_kyoto_tower(self):
-        meshcode_lv6 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=6)
-
-        expected_meshcode_lv6 = '52353680412'
-        self.assertEqual(expected_meshcode_lv6, meshcode_lv6)
-
-    def test_to_meshcode_100_kyoto_tower(self):
-        meshcode_100 = to_meshcode(
-                lat=self.lat_kyoto_tower,
-                lon=self.lon_kyoto_tower,
-                level=100)
-
-        expected_meshcode_100 = '5235368057'
-        self.assertEqual(expected_meshcode_100, meshcode_100)
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_lv6_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='52353680412',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=6)
