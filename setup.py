@@ -5,14 +5,17 @@ from distutils.core import setup
 
 setup(name='jismesh',
       packages=['jismesh'],
-      version='1.2.0',
+      version='1.3.0',
       author='Haruki Nishikawa',
       author_email='harukinishikawa84@hotmail.com',
       url='https://github.com/hni14/jismesh',
       download_url='https://github.com/hni14/jismesh',
-      keywords = ['mesh'],
+      keywords = ['mesh', 'grid', 'meshcode', 'mesh code', 'JIS X 0410'],
       description='Utilities for area mesh code defined in Japanese Industorial Standards (JIS X 0410 地域メッシュコード).',
       license = 'MIT',
+      requires = [
+        'numpy',
+      ],
       extras_require={
          ':python_version < "3.0"': [
             'functools32',
@@ -40,5 +43,7 @@ setup(name='jismesh',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         ],
      )

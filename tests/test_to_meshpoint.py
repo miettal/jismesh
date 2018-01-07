@@ -29,13 +29,15 @@ class TestToMeshpoint(unittest.TestCase):
         pass
 
     def _test_helper(
-            self, meshcode, level,
-            lat_multiplier, lon_multiplier,
-            expected_lat, expected_lon):
+            self,
+            meshcode,
+            lat_multiplier,
+            lon_multiplier,
+            expected_lat,
+            expected_lon):
 
         lat, lon = to_meshpoint(
             meshcode=meshcode,
-            level=level,
             lat_multiplier=lat_multiplier,
             lon_multiplier=lon_multiplier)
 
@@ -51,7 +53,6 @@ class TestToMeshpoint(unittest.TestCase):
         lon_multiplier = 0
         self._test_helper(
             meshcode=meshcode,
-            level=level,
             lat_multiplier=lat_multiplier,
             lon_multiplier=lon_multiplier,
             expected_lat=lat_sw+unit_lat*lat_multiplier,
@@ -62,7 +63,6 @@ class TestToMeshpoint(unittest.TestCase):
         lon_multiplier = 1
         self._test_helper(
             meshcode=meshcode,
-            level=level,
             lat_multiplier=lat_multiplier,
             lon_multiplier=lon_multiplier,
             expected_lat=lat_sw+unit_lat*lat_multiplier,
@@ -73,7 +73,6 @@ class TestToMeshpoint(unittest.TestCase):
         lon_multiplier = 0
         self._test_helper(
             meshcode=meshcode,
-            level=level,
             lat_multiplier=lat_multiplier,
             lon_multiplier=lon_multiplier,
             expected_lat=lat_sw+unit_lat*lat_multiplier,
@@ -84,7 +83,6 @@ class TestToMeshpoint(unittest.TestCase):
         lon_multiplier = 1
         self._test_helper(
             meshcode=meshcode,
-            level=level,
             lat_multiplier=lat_multiplier,
             lon_multiplier=lon_multiplier,
             expected_lat=lat_sw+unit_lat*lat_multiplier,
@@ -95,7 +93,6 @@ class TestToMeshpoint(unittest.TestCase):
         lon_multiplier = 0.5
         self._test_helper(
             meshcode=meshcode,
-            level=level,
             lat_multiplier=lat_multiplier,
             lon_multiplier=lon_multiplier,
             expected_lat=lat_sw+unit_lat*lat_multiplier,
@@ -138,7 +135,7 @@ class TestToMeshpoint(unittest.TestCase):
 
     def test_2500(self):
         self._test_helper_corners(
-            meshcode="53390011",
+            meshcode="533900116",
             level=2500,
             lat_sw=35+1/3,
             lon_sw=139)
