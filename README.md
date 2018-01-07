@@ -114,3 +114,19 @@
 	0    (35.6625, 139.74375)
 	1    (34.9875, 135.75625)
 	dtype: object
+
+## 交差する地域メッシュコードを求める
+
+### 使用例
+    import jismesh.utils as ju
+    
+    # 交差するメッシュコードを求める。
+    generator_intersects = ju.to_intersects('53394611', 4)
+
+	for meshcode in generator_intersects:
+		print meshcode
+    
+	533946111
+	533946112
+	533946113
+	533946114

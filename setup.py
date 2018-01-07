@@ -10,9 +10,12 @@ setup(name='jismesh',
       author_email='harukinishikawa84@hotmail.com',
       url='https://github.com/hni14/jismesh',
       download_url='https://github.com/hni14/jismesh',
-      keywords = ['mesh'],
+      keywords = ['mesh', 'grid'],
       description='Utilities for area mesh code defined in Japanese Industorial Standards (JIS X 0410 地域メッシュコード).',
       license = 'MIT',
+      requires = [
+        'numpy',
+      ],
       extras_require={
          ':python_version < "3.0"': [
             'functools32',
@@ -40,5 +43,7 @@ setup(name='jismesh',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         ],
      )
