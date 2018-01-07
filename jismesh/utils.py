@@ -9,28 +9,48 @@ else:
     import functools
 
 # unit in degree of latitude and longitude for each mesh level. 
-unit_lat_lv1 = functools.lru_cache(1)(lambda: 2/3)
-unit_lon_lv1 = functools.lru_cache(1)(lambda: 1)
-unit_lat_40000 = functools.lru_cache(1)(lambda: unit_lat_lv1()/2)
-unit_lon_40000 = functools.lru_cache(1)(lambda: unit_lon_lv1()/2)
-unit_lat_20000 = functools.lru_cache(1)(lambda: unit_lat_lv1()/4)
-unit_lon_20000 = functools.lru_cache(1)(lambda: unit_lon_lv1()/4)
-unit_lat_lv2 = functools.lru_cache(1)(lambda: unit_lat_lv1()/8)
-unit_lon_lv2 = functools.lru_cache(1)(lambda: unit_lon_lv1()/8)
-unit_lat_5000 = functools.lru_cache(1)(lambda: unit_lat_lv2()/2)
-unit_lon_5000 = functools.lru_cache(1)(lambda: unit_lon_lv2()/2)
-unit_lat_2500 = functools.lru_cache(1)(lambda: unit_lat_lv2()/4)
-unit_lon_2500 = functools.lru_cache(1)(lambda: unit_lon_lv2()/4)
-unit_lat_2000 = functools.lru_cache(1)(lambda: unit_lat_lv2()/5)
-unit_lon_2000 = functools.lru_cache(1)(lambda: unit_lon_lv2()/5)
-unit_lat_lv3 = functools.lru_cache(1)(lambda: unit_lat_lv2()/10)
-unit_lon_lv3 = functools.lru_cache(1)(lambda: unit_lon_lv2()/10)
-unit_lat_lv4 = functools.lru_cache(1)(lambda: unit_lat_lv3()/2)
-unit_lon_lv4 = functools.lru_cache(1)(lambda: unit_lon_lv3()/2)
-unit_lat_lv5 = functools.lru_cache(1)(lambda: unit_lat_lv4()/2)
-unit_lon_lv5 = functools.lru_cache(1)(lambda: unit_lon_lv4()/2)
-unit_lat_lv6 = functools.lru_cache(1)(lambda: unit_lat_lv5()/2)
-unit_lon_lv6 = functools.lru_cache(1)(lambda: unit_lon_lv5()/2)
+_unit_lat_lv1 = functools.lru_cache(1)(lambda: 2/3)
+_unit_lon_lv1 = functools.lru_cache(1)(lambda: 1)
+_unit_lat_40000 = functools.lru_cache(1)(lambda: _unit_lat_lv1()/2)
+_unit_lon_40000 = functools.lru_cache(1)(lambda: _unit_lon_lv1()/2)
+_unit_lat_20000 = functools.lru_cache(1)(lambda: _unit_lat_lv1()/4)
+_unit_lon_20000 = functools.lru_cache(1)(lambda: _unit_lon_lv1()/4)
+_unit_lat_lv2 = functools.lru_cache(1)(lambda: _unit_lat_lv1()/8)
+_unit_lon_lv2 = functools.lru_cache(1)(lambda: _unit_lon_lv1()/8)
+_unit_lat_5000 = functools.lru_cache(1)(lambda: _unit_lat_lv2()/2)
+_unit_lon_5000 = functools.lru_cache(1)(lambda: _unit_lon_lv2()/2)
+_unit_lat_2500 = functools.lru_cache(1)(lambda: _unit_lat_lv2()/4)
+_unit_lon_2500 = functools.lru_cache(1)(lambda: _unit_lon_lv2()/4)
+_unit_lat_2000 = functools.lru_cache(1)(lambda: _unit_lat_lv2()/5)
+_unit_lon_2000 = functools.lru_cache(1)(lambda: _unit_lon_lv2()/5)
+_unit_lat_lv3 = functools.lru_cache(1)(lambda: _unit_lat_lv2()/10)
+_unit_lon_lv3 = functools.lru_cache(1)(lambda: _unit_lon_lv2()/10)
+_unit_lat_lv4 = functools.lru_cache(1)(lambda: _unit_lat_lv3()/2)
+_unit_lon_lv4 = functools.lru_cache(1)(lambda: _unit_lon_lv3()/2)
+_unit_lat_lv5 = functools.lru_cache(1)(lambda: _unit_lat_lv4()/2)
+_unit_lon_lv5 = functools.lru_cache(1)(lambda: _unit_lon_lv4()/2)
+_unit_lat_lv6 = functools.lru_cache(1)(lambda: _unit_lat_lv5()/2)
+_unit_lon_lv6 = functools.lru_cache(1)(lambda: _unit_lon_lv5()/2)
+
+_dict_unit_lat_lon = {
+    1 : (_unit_lat_lv1, _unit_lon_lv1),
+    40000 : (_unit_lat_40000, _unit_lon_40000),
+    20000 : (_unit_lat_20000, _unit_lon_20000),
+    2 : (_unit_lat_lv2, _unit_lon_lv2),
+    5000 : (_unit_lat_5000, _unit_lon_5000),
+    2500 : (_unit_lat_2500, _unit_lon_2500),
+    2000 : (_unit_lat_2000, _unit_lon_2000),
+    3 : (_unit_lat_lv3, _unit_lon_lv3),
+    4 : (_unit_lat_lv4, _unit_lon_lv4),
+    5 : (_unit_lat_lv5, _unit_lon_lv5),
+    6 : (_unit_lat_lv6, _unit_lon_lv6)
+}
+
+def unit_lat(level):
+    return _dict_unit_lat_lon[level][0]()
+
+def unit_lon(level):
+    return _dict_unit_lat_lon[level][1]()
 
 def to_meshcode(lat, lon, level):
     """緯度経度から指定次の地域メッシュコードを算出する。
@@ -64,78 +84,78 @@ def to_meshcode(lat, lon, level):
     # reminder of latitude and longitude by its unit in degree of mesh level.
     rem_lat_lv0 = lambda lat: lat
     rem_lon_lv0 = lambda lon: lon % 100
-    rem_lat_lv1 = lambda lat: rem_lat_lv0(lat) % unit_lat_lv1()
-    rem_lon_lv1 = lambda lon: rem_lon_lv0(lon) % unit_lon_lv1()
-    rem_lat_40000 = lambda lat: rem_lat_lv1(lat) % unit_lat_40000()
-    rem_lon_40000 = lambda lon: rem_lon_lv1(lon) % unit_lon_40000()
-    rem_lat_20000 = lambda lat: rem_lat_lv1(lat) % unit_lat_20000()
-    rem_lon_20000 = lambda lon: rem_lon_lv1(lon) % unit_lon_20000()
-    rem_lat_lv2 = lambda lat: rem_lat_lv1(lat) % unit_lat_lv2()
-    rem_lon_lv2 = lambda lon: rem_lon_lv1(lon) % unit_lon_lv2()
-    rem_lat_5000 = lambda lat: rem_lat_lv2(lat) % unit_lat_5000()
-    rem_lon_5000 = lambda lon: rem_lon_lv2(lon) % unit_lon_5000()
-    rem_lat_2500 = lambda lat: rem_lat_lv2(lat) % unit_lat_2500()
-    rem_lon_2500 = lambda lon: rem_lon_lv2(lon) % unit_lon_2500()
-    rem_lat_2000 = lambda lat: rem_lat_lv2(lat) % unit_lat_2000()
-    rem_lon_2000 = lambda lon: rem_lon_lv2(lon) % unit_lon_2000()
-    rem_lat_lv3 = lambda lat: rem_lat_lv2(lat) % unit_lat_lv3()
-    rem_lon_lv3 = lambda lon: rem_lon_lv2(lon) % unit_lon_lv3()
-    rem_lat_lv4 = lambda lat: rem_lat_lv3(lat) % unit_lat_lv4()
-    rem_lon_lv4 = lambda lon: rem_lon_lv3(lon) % unit_lon_lv4()
-    rem_lat_lv5 = lambda lat: rem_lat_lv4(lat) % unit_lat_lv5()
-    rem_lon_lv5 = lambda lon: rem_lon_lv4(lon) % unit_lon_lv5()
-    rem_lat_lv6 = lambda lat: rem_lat_lv5(lat) % unit_lat_lv6()
-    rem_lon_lv6 = lambda lon: rem_lon_lv5(lon) % unit_lon_lv6()
+    rem_lat_lv1 = lambda lat: rem_lat_lv0(lat) % _unit_lat_lv1()
+    rem_lon_lv1 = lambda lon: rem_lon_lv0(lon) % _unit_lon_lv1()
+    rem_lat_40000 = lambda lat: rem_lat_lv1(lat) % _unit_lat_40000()
+    rem_lon_40000 = lambda lon: rem_lon_lv1(lon) % _unit_lon_40000()
+    rem_lat_20000 = lambda lat: rem_lat_lv1(lat) % _unit_lat_20000()
+    rem_lon_20000 = lambda lon: rem_lon_lv1(lon) % _unit_lon_20000()
+    rem_lat_lv2 = lambda lat: rem_lat_lv1(lat) % _unit_lat_lv2()
+    rem_lon_lv2 = lambda lon: rem_lon_lv1(lon) % _unit_lon_lv2()
+    rem_lat_5000 = lambda lat: rem_lat_lv2(lat) % _unit_lat_5000()
+    rem_lon_5000 = lambda lon: rem_lon_lv2(lon) % _unit_lon_5000()
+    rem_lat_2500 = lambda lat: rem_lat_lv2(lat) % _unit_lat_2500()
+    rem_lon_2500 = lambda lon: rem_lon_lv2(lon) % _unit_lon_2500()
+    rem_lat_2000 = lambda lat: rem_lat_lv2(lat) % _unit_lat_2000()
+    rem_lon_2000 = lambda lon: rem_lon_lv2(lon) % _unit_lon_2000()
+    rem_lat_lv3 = lambda lat: rem_lat_lv2(lat) % _unit_lat_lv3()
+    rem_lon_lv3 = lambda lon: rem_lon_lv2(lon) % _unit_lon_lv3()
+    rem_lat_lv4 = lambda lat: rem_lat_lv3(lat) % _unit_lat_lv4()
+    rem_lon_lv4 = lambda lon: rem_lon_lv3(lon) % _unit_lon_lv4()
+    rem_lat_lv5 = lambda lat: rem_lat_lv4(lat) % _unit_lat_lv5()
+    rem_lon_lv5 = lambda lon: rem_lon_lv4(lon) % _unit_lon_lv5()
+    rem_lat_lv6 = lambda lat: rem_lat_lv5(lat) % _unit_lat_lv6()
+    rem_lon_lv6 = lambda lon: rem_lon_lv5(lon) % _unit_lon_lv6()
 
     def meshcode_lv1(lat, lon):
-        ab = int(rem_lat_lv0(lat) / unit_lat_lv1())
-        cd = int(rem_lon_lv0(lon) / unit_lon_lv1())
+        ab = int(rem_lat_lv0(lat) / _unit_lat_lv1())
+        cd = int(rem_lon_lv0(lon) / _unit_lon_lv1())
         return str(ab) + str(cd)
 
     def meshcode_40000(lat, lon):
-        e = int(rem_lat_lv1(lat) / unit_lat_40000())*2 + int(rem_lon_lv1(lon) / unit_lon_40000()) + 1
+        e = int(rem_lat_lv1(lat) / _unit_lat_40000())*2 + int(rem_lon_lv1(lon) / _unit_lon_40000()) + 1
         return meshcode_lv1(lat, lon) + str(e)
 
     def meshcode_20000(lat, lon):
-        f = int(rem_lat_40000(lat) / unit_lat_20000())*2 + int(rem_lon_40000(lon) / unit_lon_20000()) + 1
+        f = int(rem_lat_40000(lat) / _unit_lat_20000())*2 + int(rem_lon_40000(lon) / _unit_lon_20000()) + 1
         g = 5
         return meshcode_40000(lat, lon) + str(f) + str(g)
 
     def meshcode_lv2(lat, lon):
-        e = int(rem_lat_lv1(lat) / unit_lat_lv2())
-        f = int(rem_lon_lv1(lon) / unit_lon_lv2())
+        e = int(rem_lat_lv1(lat) / _unit_lat_lv2())
+        f = int(rem_lon_lv1(lon) / _unit_lon_lv2())
         return meshcode_lv1(lat, lon) + str(e) + str(f)
 
     def meshcode_5000(lat, lon):
-        g = int(rem_lat_lv2(lat) / unit_lat_5000())*2 + int(rem_lon_lv2(lon) / unit_lon_5000()) + 1
+        g = int(rem_lat_lv2(lat) / _unit_lat_5000())*2 + int(rem_lon_lv2(lon) / _unit_lon_5000()) + 1
         return meshcode_lv2(lat, lon) + str(g)
 
     def meshcode_2500(lat, lon):
-        h = int(rem_lat_5000(lat) / unit_lat_2500())*2 + int(rem_lon_5000(lon) / unit_lon_2500()) + 1
+        h = int(rem_lat_5000(lat) / _unit_lat_2500())*2 + int(rem_lon_5000(lon) / _unit_lon_2500()) + 1
         i = 6
         return meshcode_5000(lat, lon) + str(h) + str(i)
 
     def meshcode_2000(lat, lon):
-        g = int(rem_lat_lv2(lat) / unit_lat_2000())*2
-        h = int(rem_lon_lv2(lon) / unit_lon_2000())*2
+        g = int(rem_lat_lv2(lat) / _unit_lat_2000())*2
+        h = int(rem_lon_lv2(lon) / _unit_lon_2000())*2
         i = 5
         return meshcode_lv2(lat, lon) + str(g) + str(h) + str(i)
 
     def meshcode_lv3(lat, lon):
-        g = int(rem_lat_lv2(lat) / unit_lat_lv3())
-        h = int(rem_lon_lv2(lon) / unit_lon_lv3())
+        g = int(rem_lat_lv2(lat) / _unit_lat_lv3())
+        h = int(rem_lon_lv2(lon) / _unit_lon_lv3())
         return meshcode_lv2(lat, lon) + str(g) + str(h)
 
     def meshcode_lv4(lat, lon):
-        i = int(rem_lat_lv3(lat) / unit_lat_lv4())*2 + int(rem_lon_lv3(lon) / unit_lon_lv4()) + 1
+        i = int(rem_lat_lv3(lat) / _unit_lat_lv4())*2 + int(rem_lon_lv3(lon) / _unit_lon_lv4()) + 1
         return meshcode_lv3(lat, lon) + str(i)
 
     def meshcode_lv5(lat, lon):
-        j = int(rem_lat_lv4(lat) / unit_lat_lv5())*2 + int(rem_lon_lv4(lon) / unit_lon_lv5()) + 1
+        j = int(rem_lat_lv4(lat) / _unit_lat_lv5())*2 + int(rem_lon_lv4(lon) / _unit_lon_lv5()) + 1
         return meshcode_lv4(lat, lon) + str(j)
 
     def meshcode_lv6(lat, lon):
-        k = int(rem_lat_lv5(lat) / unit_lat_lv6())*2 + int(rem_lon_lv5(lon) / unit_lon_lv6()) + 1
+        k = int(rem_lat_lv5(lat) / _unit_lat_lv6())*2 + int(rem_lon_lv5(lon) / _unit_lon_lv6()) + 1
         return meshcode_lv5(lat, lon) + str(k)
 
     if level == 1:
@@ -230,25 +250,13 @@ def to_meshlevel(meshcode):
 
     raise ValueError('the meshcode is unsupported.')
 
-def to_meshpoint(meshcode, level, lat_multiplier, lon_multiplier):
+def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     """地域メッシュコードから緯度経度を算出する。
     1次、2次、5倍メッシュ、2倍メッシュ、3次、4次、
     5次、6次、100メートルメッシュに対応している。
 
     Args:
         meshcode: 指定次の地域メッシュコード
-        level: 地域メッシュコードの次数
-                1次(80km四方):1
-                40倍(40km四方):40000
-                20倍(20km四方):20000
-                2次(10km四方):2
-                5倍(5km四方):5000
-                2.5倍(2.5km四方):2500
-                2倍(2km四方):2000
-                3次(1km四方):3
-                4次(500m四方):4
-                5次(250m四方):5
-                6次(125m四方):6
         lat_multiplier: 当該メッシュの基準点(南西端)から、緯度座標上の点の位置を当該メッシュの単位緯度の倍数で指定
         lon_multiplier: 当該メッシュの基準点(南西端)から、経度座標上の点の位置を当該メッシュの単位経度の倍数で指定
     Return:
@@ -333,266 +341,268 @@ def to_meshpoint(meshcode, level, lat_multiplier, lon_multiplier):
     mesh_lv1_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=lambda: 0,
-        func_unit_cord=unit_lat_lv1,
+        func_unit_cord=_unit_lat_lv1,
         func_multiplier=lat_multiplier_lv1)
 
     mesh_lv1_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=lambda: 100,
-        func_unit_cord=unit_lon_lv1,
+        func_unit_cord=_unit_lon_lv1,
         func_multiplier=lon_multiplier_lv1)
 
     mesh_40000_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv1_default_lat,
-        func_unit_cord=unit_lat_40000,
+        func_unit_cord=_unit_lat_40000,
         func_multiplier=lat_multiplier_40000)
 
     mesh_40000_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv1_default_lon,
-        func_unit_cord=unit_lon_40000,
+        func_unit_cord=_unit_lon_40000,
         func_multiplier=lon_multiplier_40000)
 
     mesh_20000_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_40000_default_lat,
-        func_unit_cord=unit_lat_20000,
+        func_unit_cord=_unit_lat_20000,
         func_multiplier=lat_multiplier_20000)
 
     mesh_20000_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_40000_default_lon,
-        func_unit_cord=unit_lon_20000,
+        func_unit_cord=_unit_lon_20000,
         func_multiplier=lon_multiplier_20000)
 
     mesh_lv2_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv1_default_lat,
-        func_unit_cord=unit_lat_lv2,
+        func_unit_cord=_unit_lat_lv2,
         func_multiplier=lat_multiplier_lv2)
 
     mesh_lv2_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv1_default_lon,
-        func_unit_cord=unit_lon_lv2,
+        func_unit_cord=_unit_lon_lv2,
         func_multiplier=lon_multiplier_lv2)
 
     mesh_5000_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lat,
-        func_unit_cord=unit_lat_5000,
+        func_unit_cord=_unit_lat_5000,
         func_multiplier=lat_multiplier_5000)
 
     mesh_5000_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lon,
-        func_unit_cord=unit_lon_5000,
+        func_unit_cord=_unit_lon_5000,
         func_multiplier=lon_multiplier_5000)
 
     mesh_2500_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_5000_default_lat,
-        func_unit_cord=unit_lat_2500,
+        func_unit_cord=_unit_lat_2500,
         func_multiplier=lat_multiplier_2500)
 
     mesh_2500_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_5000_default_lon,
-        func_unit_cord=unit_lon_2500,
+        func_unit_cord=_unit_lon_2500,
         func_multiplier=lon_multiplier_2500)
 
     mesh_2000_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lat,
-        func_unit_cord=unit_lat_2000,
+        func_unit_cord=_unit_lat_2000,
         func_multiplier=lat_multiplier_2000)
 
     mesh_2000_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lon,
-        func_unit_cord=unit_lon_2000,
+        func_unit_cord=_unit_lon_2000,
         func_multiplier=lon_multiplier_2000)
 
     mesh_lv3_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lat,
-        func_unit_cord=unit_lat_lv3,
+        func_unit_cord=_unit_lat_lv3,
         func_multiplier=lat_multiplier_lv3)
 
     mesh_lv3_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lon,
-        func_unit_cord=unit_lon_lv3,
+        func_unit_cord=_unit_lon_lv3,
         func_multiplier=lon_multiplier_lv3)
 
     mesh_lv4_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv3_default_lat,
-        func_unit_cord=unit_lat_lv4,
+        func_unit_cord=_unit_lat_lv4,
         func_multiplier=lat_multiplier_lv4)
 
     mesh_lv4_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv3_default_lon,
-        func_unit_cord=unit_lon_lv4,
+        func_unit_cord=_unit_lon_lv4,
         func_multiplier=lon_multiplier_lv4)
 
     mesh_lv5_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv4_default_lat,
-        func_unit_cord=unit_lat_lv5,
+        func_unit_cord=_unit_lat_lv5,
         func_multiplier=lat_multiplier_lv5)
 
     mesh_lv5_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv4_default_lon,
-        func_unit_cord=unit_lon_lv5,
+        func_unit_cord=_unit_lon_lv5,
         func_multiplier=lon_multiplier_lv5)
 
     mesh_lv6_default_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv5_default_lat,
-        func_unit_cord=unit_lat_lv6,
+        func_unit_cord=_unit_lat_lv6,
         func_multiplier=lat_multiplier_lv6)
 
     mesh_lv6_default_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv5_default_lon,
-        func_unit_cord=unit_lon_lv6,
+        func_unit_cord=_unit_lon_lv6,
         func_multiplier=lon_multiplier_lv6)
 
     mesh_lv1_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv1_default_lat,
-        func_unit_cord=unit_lat_lv1,
+        func_unit_cord=_unit_lat_lv1,
         func_multiplier=lat_multiplier_lv)
 
     mesh_lv1_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv1_default_lon,
-        func_unit_cord=unit_lon_lv1,
+        func_unit_cord=_unit_lon_lv1,
         func_multiplier=lon_multiplier_lv)
 
     mesh_40000_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_40000_default_lat,
-        func_unit_cord=unit_lat_40000,
+        func_unit_cord=_unit_lat_40000,
         func_multiplier=lat_multiplier_lv)
 
     mesh_40000_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_40000_default_lon,
-        func_unit_cord=unit_lon_40000,
+        func_unit_cord=_unit_lon_40000,
         func_multiplier=lon_multiplier_lv)
 
     mesh_20000_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_20000_default_lat,
-        func_unit_cord=unit_lat_20000,
+        func_unit_cord=_unit_lat_20000,
         func_multiplier=lat_multiplier_lv)
 
     mesh_20000_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_20000_default_lon,
-        func_unit_cord=unit_lon_20000,
+        func_unit_cord=_unit_lon_20000,
         func_multiplier=lon_multiplier_lv)
 
     mesh_lv2_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lat,
-        func_unit_cord=unit_lat_lv2,
+        func_unit_cord=_unit_lat_lv2,
         func_multiplier=lat_multiplier_lv)
 
     mesh_lv2_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lon,
-        func_unit_cord=unit_lon_lv2,
+        func_unit_cord=_unit_lon_lv2,
         func_multiplier=lon_multiplier_lv)
 
     mesh_5000_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_5000_default_lat,
-        func_unit_cord=unit_lat_5000,
+        func_unit_cord=_unit_lat_5000,
         func_multiplier=lat_multiplier_lv)
 
     mesh_5000_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_5000_default_lon,
-        func_unit_cord=unit_lon_5000,
+        func_unit_cord=_unit_lon_5000,
         func_multiplier=lon_multiplier_lv)
 
     mesh_2500_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_2500_default_lat,
-        func_unit_cord=unit_lat_2500,
+        func_unit_cord=_unit_lat_2500,
         func_multiplier=lat_multiplier_lv)
 
     mesh_2500_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_2500_default_lon,
-        func_unit_cord=unit_lon_2500,
+        func_unit_cord=_unit_lon_2500,
         func_multiplier=lon_multiplier_lv)
 
     mesh_2000_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_2000_default_lat,
-        func_unit_cord=unit_lat_2000,
+        func_unit_cord=_unit_lat_2000,
         func_multiplier=lat_multiplier_lv)
 
     mesh_2000_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_2000_default_lon,
-        func_unit_cord=unit_lon_2000,
+        func_unit_cord=_unit_lon_2000,
         func_multiplier=lon_multiplier_lv)
 
     mesh_lv3_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv3_default_lat,
-        func_unit_cord=unit_lat_lv3,
+        func_unit_cord=_unit_lat_lv3,
         func_multiplier=lat_multiplier_lv)
 
     mesh_lv3_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv3_default_lon,
-        func_unit_cord=unit_lon_lv3,
+        func_unit_cord=_unit_lon_lv3,
         func_multiplier=lon_multiplier_lv)
 
     mesh_lv4_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv4_default_lat,
-        func_unit_cord=unit_lat_lv4,
+        func_unit_cord=_unit_lat_lv4,
         func_multiplier=lat_multiplier_lv)
 
     mesh_lv4_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv4_default_lon,
-        func_unit_cord=unit_lon_lv4,
+        func_unit_cord=_unit_lon_lv4,
         func_multiplier=lon_multiplier_lv)
 
     mesh_lv5_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv5_default_lat,
-        func_unit_cord=unit_lat_lv5,
+        func_unit_cord=_unit_lat_lv5,
         func_multiplier=lat_multiplier_lv)
 
     mesh_lv5_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv5_default_lon,
-        func_unit_cord=unit_lon_lv5,
+        func_unit_cord=_unit_lon_lv5,
         func_multiplier=lon_multiplier_lv)
 
     mesh_lv6_lat = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv6_default_lat,
-        func_unit_cord=unit_lat_lv6,
+        func_unit_cord=_unit_lat_lv6,
         func_multiplier=lat_multiplier_lv)
 
     mesh_lv6_lon = functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv6_default_lon,
-        func_unit_cord=unit_lon_lv6,
+        func_unit_cord=_unit_lon_lv6,
         func_multiplier=lon_multiplier_lv)
+
+    level = to_meshlevel(meshcode)
 
     if level == 1:
         return mesh_lv1_lat(), mesh_lv1_lon()

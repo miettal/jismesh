@@ -83,22 +83,22 @@
     import jismesh.utils as ju
     
     # 南西端の緯度経度を求める。
-    lat_sw, lon_sw = ju.to_meshpoint('53393599', 3, 0, 0)
+    lat_sw, lon_sw = ju.to_meshpoint('53393599', 0, 0)
     print lat_sw, lon_sw
     35.6583333333 139.7375
     
     # 北東端の緯度経度を求める。
-    lat_ne, lon_ne = ju.to_meshpoint('53393599', 3, 1, 1)
+    lat_ne, lon_ne = ju.to_meshpoint('53393599', 1, 1)
     print lat_ne, lon_ne
     35.6666666667 139.75
     
     # 中心点の緯度経度を求める。
-    lat_c, lon_c = ju.to_meshpoint('53393599', 3, 0.5, 0.5)
+    lat_c, lon_c = ju.to_meshpoint('53393599', 0.5, 0.5)
     print lat_c, lon_c
     35.6625 139.74375
 
 	# 西隣接メッシュの中心点の緯度経度を求める。
-	lat_west_neighbor_c, lon_west_neighbor_c = ju.to_meshpoint('53393599', 3, 0.5, 1.5)
+	lat_west_neighbor_c, lon_west_neighbor_c = ju.to_meshpoint('53393599', 0.5, 1.5)
 	print lat_west_neighbor_c, lon_west_neighbor_c
 	35.6625 139.75625
 
@@ -109,7 +109,7 @@
 	   meshcode
 	0  53393599
 	1  52353680
-	cord_series = df.apply(lambda r: ju.to_meshpoint(r.meshcode, 3, 0.5, 0.5), axis=1)
+	cord_series = df.apply(lambda r: ju.to_meshpoint(r.meshcode, 0.5, 0.5), axis=1)
 	print cord_series
 	0    (35.6625, 139.74375)
 	1    (34.9875, 135.75625)
