@@ -41,11 +41,11 @@ print(df)
 0  35.658581  139.745433
 1  34.987574  135.759363
 
-mesh_series = df.apply(lambda r: ju.to_meshcode(r.lat, r.lon, 3), axis=1)
-print(mesh_series)
-0    53393599
-1    52353680
-dtype: object
+df['meshcode'] = df.apply(lambda r: ju.to_meshcode(r.lat, r.lon, 3), axis=1).apply(pd.Series)
+print(df)
+         lat         lon  meshcode
+0  35.658581  139.745433  53393599
+1  34.987574  135.759363  52353680
 ```
 
 
@@ -69,11 +69,12 @@ print(df)
    meshcode
 0  53393599
 1  52353680
-level_series = df.apply(lambda r: ju.to_meshlevel(r.meshcode), axis=1)
-print(level_series)
-0    3
-1    3
-dtype: int64
+
+df['level'] = df.meshcode.apply(ju.to_meshlevel).apply(pd.Series)
+print(df)
+   meshcode  level
+0  53393599      3
+1  52353680      3
 ```
  
 
@@ -107,18 +108,19 @@ lat_east_neighbor_c, lon_east_neighbor_c = ju.to_meshpoint('53393599', 0.5, 1.5)
 print(lat_east_neighbor_c, lon_east_neighbor_c)
 35.6625 139.75625
 
-# pandas DataFrame中のメッシュコードを中心点に変換する。
+# pandas DataFrame中のメッシュコードを中心点緯度経度に変換する。
 import pandas as pd
 df = pd.DataFrame({'meshcode': ['53393599', '52353680']})
 print(df)
    meshcode
 0  53393599
 1  52353680
-cord_series = df.apply(lambda r: ju.to_meshpoint(r.meshcode, 0.5, 0.5), axis=1)
-print(cord_series)
-0    (35.6625, 139.74375)
-1    (34.9875, 135.75625)
-dtype: object
+
+df[['lat', 'lon']] = df.meshcode.apply(ju.to_meshpoint, lat_multiplier=0.5, lon_multiplier=0.5).apply(pd.Series)
+print(df)
+   meshcode      lat        lon
+0  53393599  35.6625  139.74375
+1  52353680  34.9875  135.75625
 ```
 
 ## 交差する地域メッシュコードを求める
