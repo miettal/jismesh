@@ -13,14 +13,18 @@ _unit_lat_lv1 = _functools.lru_cache(1)(lambda: 2/3)
 _unit_lon_lv1 = _functools.lru_cache(1)(lambda: 1)
 _unit_lat_40000 = _functools.lru_cache(1)(lambda: _unit_lat_lv1()/2)
 _unit_lon_40000 = _functools.lru_cache(1)(lambda: _unit_lon_lv1()/2)
-_unit_lat_20000 = _functools.lru_cache(1)(lambda: _unit_lat_lv1()/4)
-_unit_lon_20000 = _functools.lru_cache(1)(lambda: _unit_lon_lv1()/4)
+_unit_lat_20000 = _functools.lru_cache(1)(lambda: _unit_lat_40000()/2)
+_unit_lon_20000 = _functools.lru_cache(1)(lambda: _unit_lon_40000()/2)
 _unit_lat_lv2 = _functools.lru_cache(1)(lambda: _unit_lat_lv1()/8)
 _unit_lon_lv2 = _functools.lru_cache(1)(lambda: _unit_lon_lv1()/8)
+_unit_lat_8000 = _functools.lru_cache(1)(lambda: _unit_lat_lv1()/10)
+_unit_lon_8000 = _functools.lru_cache(1)(lambda: _unit_lon_lv1()/10)
 _unit_lat_5000 = _functools.lru_cache(1)(lambda: _unit_lat_lv2()/2)
 _unit_lon_5000 = _functools.lru_cache(1)(lambda: _unit_lon_lv2()/2)
-_unit_lat_2500 = _functools.lru_cache(1)(lambda: _unit_lat_lv2()/4)
-_unit_lon_2500 = _functools.lru_cache(1)(lambda: _unit_lon_lv2()/4)
+_unit_lat_4000 = _functools.lru_cache(1)(lambda: _unit_lat_8000()/2)
+_unit_lon_4000 = _functools.lru_cache(1)(lambda: _unit_lon_8000()/2)
+_unit_lat_2500 = _functools.lru_cache(1)(lambda: _unit_lat_5000()/2)
+_unit_lon_2500 = _functools.lru_cache(1)(lambda: _unit_lon_5000()/2)
 _unit_lat_2000 = _functools.lru_cache(1)(lambda: _unit_lat_lv2()/5)
 _unit_lon_2000 = _functools.lru_cache(1)(lambda: _unit_lon_lv2()/5)
 _unit_lat_lv3 = _functools.lru_cache(1)(lambda: _unit_lat_lv2()/10)
@@ -37,7 +41,9 @@ _dict_unit_lat_lon = {
     40000 : (_unit_lat_40000, _unit_lon_40000),
     20000 : (_unit_lat_20000, _unit_lon_20000),
     2 : (_unit_lat_lv2, _unit_lon_lv2),
+    8000 : (_unit_lat_8000, _unit_lon_8000),
     5000 : (_unit_lat_5000, _unit_lon_5000),
+    4000 : (_unit_lat_4000, _unit_lon_4000),
     2500 : (_unit_lat_2500, _unit_lon_2500),
     2000 : (_unit_lat_2000, _unit_lon_2000),
     3 : (_unit_lat_lv3, _unit_lon_lv3),
@@ -63,7 +69,9 @@ def to_meshcode(lat, lon, level):
                 40倍(40km四方):40000
                 20倍(20km四方):20000
                 2次(10km四方):2
+                8倍(8km四方):8000
                 5倍(5km四方):5000
+                4倍(4km四方):4000
                 2.5倍(2.5km四方):2500
                 2倍(2km四方):2000
                 3次(1km四方):3
@@ -88,14 +96,18 @@ def to_meshcode(lat, lon, level):
     rem_lon_lv1 = lambda lon: rem_lon_lv0(lon) % _unit_lon_lv1()
     rem_lat_40000 = lambda lat: rem_lat_lv1(lat) % _unit_lat_40000()
     rem_lon_40000 = lambda lon: rem_lon_lv1(lon) % _unit_lon_40000()
-    rem_lat_20000 = lambda lat: rem_lat_lv1(lat) % _unit_lat_20000()
-    rem_lon_20000 = lambda lon: rem_lon_lv1(lon) % _unit_lon_20000()
+    rem_lat_20000 = lambda lat: rem_lat_40000(lat) % _unit_lat_20000()
+    rem_lon_20000 = lambda lon: rem_lon_40000(lon) % _unit_lon_20000()
     rem_lat_lv2 = lambda lat: rem_lat_lv1(lat) % _unit_lat_lv2()
     rem_lon_lv2 = lambda lon: rem_lon_lv1(lon) % _unit_lon_lv2()
+    rem_lat_8000 = lambda lat: rem_lat_lv1(lat) % _unit_lat_8000()
+    rem_lon_8000 = lambda lon: rem_lon_lv1(lon) % _unit_lon_8000()
     rem_lat_5000 = lambda lat: rem_lat_lv2(lat) % _unit_lat_5000()
     rem_lon_5000 = lambda lon: rem_lon_lv2(lon) % _unit_lon_5000()
-    rem_lat_2500 = lambda lat: rem_lat_lv2(lat) % _unit_lat_2500()
-    rem_lon_2500 = lambda lon: rem_lon_lv2(lon) % _unit_lon_2500()
+    rem_lat_4000 = lambda lat: rem_lat_8000(lat) % _unit_lat_4000()
+    rem_lon_4000 = lambda lon: rem_lon_8000(lon) % _unit_lon_4000()
+    rem_lat_2500 = lambda lat: rem_lat_5000(lat) % _unit_lat_2500()
+    rem_lon_2500 = lambda lon: rem_lon_5000(lon) % _unit_lon_2500()
     rem_lat_2000 = lambda lat: rem_lat_lv2(lat) % _unit_lat_2000()
     rem_lon_2000 = lambda lon: rem_lon_lv2(lon) % _unit_lon_2000()
     rem_lat_lv3 = lambda lat: rem_lat_lv2(lat) % _unit_lat_lv3()
@@ -118,7 +130,7 @@ def to_meshcode(lat, lon, level):
 
     def meshcode_20000(lat, lon):
         f = int(rem_lat_40000(lat) / _unit_lat_20000())*2 + int(rem_lon_40000(lon) / _unit_lon_20000()) + 1
-        g = 5
+        g = 6
         return meshcode_40000(lat, lon) + str(f) + str(g)
 
     def meshcode_lv2(lat, lon):
@@ -126,9 +138,20 @@ def to_meshcode(lat, lon, level):
         f = int(rem_lon_lv1(lon) / _unit_lon_lv2())
         return meshcode_lv1(lat, lon) + str(e) + str(f)
 
+    def meshcode_8000(lat, lon):
+        e = int(rem_lat_lv1(lat) / _unit_lat_8000())
+        f = int(rem_lon_lv1(lon) / _unit_lon_8000())
+        g = 5
+        return meshcode_lv1(lat, lon) + str(e) + str(f) + str(g)
+
     def meshcode_5000(lat, lon):
         g = int(rem_lat_lv2(lat) / _unit_lat_5000())*2 + int(rem_lon_lv2(lon) / _unit_lon_5000()) + 1
         return meshcode_lv2(lat, lon) + str(g)
+
+    def meshcode_4000(lat, lon):
+        h = int(rem_lat_8000(lat) / _unit_lat_4000())*2 + int(rem_lon_8000(lon) / _unit_lon_4000()) + 1
+        i = 7
+        return meshcode_8000(lat, lon) + str(h) + str(i)
 
     def meshcode_2500(lat, lon):
         h = int(rem_lat_5000(lat) / _unit_lat_2500())*2 + int(rem_lon_5000(lon) / _unit_lon_2500()) + 1
@@ -170,8 +193,14 @@ def to_meshcode(lat, lon, level):
     if level == 2:
         return meshcode_lv2(lat, lon)
 
+    if level == 8000:
+        return meshcode_8000(lat, lon)
+
     if level == 5000:
         return meshcode_5000(lat, lon)
+
+    if level == 4000:
+        return meshcode_4000(lat, lon)
 
     if level == 2500:
         return meshcode_2500(lat, lon)
@@ -204,14 +233,15 @@ def to_meshlevel(meshcode):
                 40倍(40km四方):40000
                 20倍(20km四方):20000
                 2次(10km四方):2
+                8倍(8km四方):8000
                 5倍(5km四方):5000
+                4倍(4km四方):4000
                 2.5倍(2.5km四方):2500
                 2倍(2km四方):2000
                 3次(1km四方):3
                 4次(500m四方):4
                 5次(250m四方):5
                 6次(125m四方):6
-
     """
 
     length = len(str(meshcode))
@@ -225,35 +255,57 @@ def to_meshlevel(meshcode):
         return 2
 
     if length == 7:
-        if meshcode[6:7] == '5':
-            return 20000
+        if meshcode[6:7] in ['1','2','3','4']:
+            return 5000
 
-        return 5000
+        if meshcode[6:7] == '5':
+            return 8000
+
+        if meshcode[6:7] == '6':
+            return 20000
 
     if length == 8:
         return 3
 
     if length == 9:
+        if meshcode[8:9] in ['1','2','3','4']:
+            return 4
+
         if meshcode[8:9] == '5':
             return 2000
 
         if meshcode[8:9] == '6':
             return 2500
 
-        return 4
+        if meshcode[8:9] == '7':
+            return 4000
 
     if length == 10:
-        return 5
+        if meshcode[9:10] in ['1','2','3','4']:
+            return 5
 
     if length == 11:
-        return 6
+        if meshcode[10:11] in ['1','2','3','4']:
+            return 6
 
     raise ValueError('the meshcode is unsupported.')
 
 def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     """地域メッシュコードから緯度経度を算出する。
-    1次、2次、5倍メッシュ、2倍メッシュ、3次、4次、
-    5次、6次、100メートルメッシュに対応している。
+        下記のメッシュに対応している。
+                1次(80km四方):1
+                40倍(40km四方):40000
+                20倍(20km四方):20000
+                2次(10km四方):2
+                8倍(8km四方):8000
+                5倍(5km四方):5000
+                4倍(4km四方):4000
+                2.5倍(2.5km四方):2500
+                2倍(2km四方):2000
+                3次(1km四方):3
+                4次(500m四方):4
+                5次(250m四方):5
+                6次(125m四方):6
 
     Args:
         meshcode: 指定次の地域メッシュコード
@@ -296,11 +348,23 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     lon_multiplier_lv2 = _functools.partial(
         lambda meshcode: int(meshcode[5:6]), meshcode=meshcode)
 
+    lat_multiplier_8000 = _functools.partial(
+        lambda meshcode: int(meshcode[4:5]), meshcode=meshcode)
+
+    lon_multiplier_8000 = _functools.partial(
+        lambda meshcode: int(meshcode[5:6]), meshcode=meshcode)
+
     lat_multiplier_5000 = _functools.partial(
         lambda meshcode: int(bin(int(meshcode[6:7])-1)[2:].zfill(2)[0:1]), meshcode=meshcode)
 
     lon_multiplier_5000 = _functools.partial(
         lambda meshcode: int(bin(int(meshcode[6:7])-1)[2:].zfill(2)[1:2]), meshcode=meshcode)
+
+    lat_multiplier_4000 = _functools.partial(
+        lambda meshcode: int(bin(int(meshcode[7:8])-1)[2:].zfill(2)[0:1]), meshcode=meshcode)
+
+    lon_multiplier_4000 = _functools.partial(
+        lambda meshcode: int(bin(int(meshcode[7:8])-1)[2:].zfill(2)[1:2]), meshcode=meshcode)
 
     lat_multiplier_2500 = _functools.partial(
         lambda meshcode: int(bin(int(meshcode[7:8])-1)[2:].zfill(2)[0:1]), meshcode=meshcode)
@@ -386,6 +450,18 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
         func_unit_cord=_unit_lon_lv2,
         func_multiplier=lon_multiplier_lv2)
 
+    mesh_8000_default_lat = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_lv1_default_lat,
+        func_unit_cord=_unit_lat_8000,
+        func_multiplier=lat_multiplier_8000)
+
+    mesh_8000_default_lon = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_lv1_default_lon,
+        func_unit_cord=_unit_lon_8000,
+        func_multiplier=lon_multiplier_8000)
+
     mesh_5000_default_lat = _functools.partial(
         mesh_cord,
         func_higher_cord=mesh_lv2_default_lat,
@@ -397,6 +473,18 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
         func_higher_cord=mesh_lv2_default_lon,
         func_unit_cord=_unit_lon_5000,
         func_multiplier=lon_multiplier_5000)
+
+    mesh_4000_default_lat = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_8000_default_lat,
+        func_unit_cord=_unit_lat_4000,
+        func_multiplier=lat_multiplier_4000)
+
+    mesh_4000_default_lon = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_8000_default_lon,
+        func_unit_cord=_unit_lon_4000,
+        func_multiplier=lon_multiplier_4000)
 
     mesh_2500_default_lat = _functools.partial(
         mesh_cord,
@@ -518,6 +606,18 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
         func_unit_cord=_unit_lon_lv2,
         func_multiplier=lon_multiplier_lv)
 
+    mesh_8000_lat = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_8000_default_lat,
+        func_unit_cord=_unit_lat_8000,
+        func_multiplier=lat_multiplier_lv)
+
+    mesh_8000_lon = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_8000_default_lon,
+        func_unit_cord=_unit_lon_8000,
+        func_multiplier=lon_multiplier_lv)
+
     mesh_5000_lat = _functools.partial(
         mesh_cord,
         func_higher_cord=mesh_5000_default_lat,
@@ -528,6 +628,18 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
         mesh_cord,
         func_higher_cord=mesh_5000_default_lon,
         func_unit_cord=_unit_lon_5000,
+        func_multiplier=lon_multiplier_lv)
+
+    mesh_4000_lat = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_4000_default_lat,
+        func_unit_cord=_unit_lat_4000,
+        func_multiplier=lat_multiplier_lv)
+
+    mesh_4000_lon = _functools.partial(
+        mesh_cord,
+        func_higher_cord=mesh_4000_default_lon,
+        func_unit_cord=_unit_lon_4000,
         func_multiplier=lon_multiplier_lv)
 
     mesh_2500_lat = _functools.partial(
@@ -616,8 +728,14 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     if level == 2:
         return mesh_lv2_lat(), mesh_lv2_lon()
 
+    if level == 8000:
+        return mesh_8000_lat(), mesh_8000_lon()
+
     if level == 5000:
         return mesh_5000_lat(), mesh_5000_lon()
+
+    if level == 4000:
+        return mesh_4000_lat(), mesh_4000_lon()
 
     if level == 2500:
         return mesh_2500_lat(), mesh_2500_lon()

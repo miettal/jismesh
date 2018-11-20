@@ -5,13 +5,13 @@ from distutils.core import setup
 
 setup(name='jismesh',
       packages=['jismesh'],
-      version='1.3.1',
+      version='2.0.0',
       author='Haruki Nishikawa',
       author_email='harukinishikawa84@hotmail.com',
       url='https://github.com/hni14/jismesh',
       download_url='https://github.com/hni14/jismesh',
       keywords = ['mesh', 'grid', 'meshcode', 'mesh code', 'JIS X 0410'],
-      description='Utilities for area mesh code defined in Japanese Industorial Standards (JIS X 0410 地域メッシュコード).',
+      description='Utilities for the Japanese regional grid system defined in Japanese Industrial Standards (JIS X 0410 地域メッシュ).',
       license = 'MIT',
       requires = [
         'numpy',
@@ -26,7 +26,7 @@ setup(name='jismesh',
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',

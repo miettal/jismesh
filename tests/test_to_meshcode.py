@@ -98,6 +98,13 @@ class TestToMeshcode(unittest.TestCase):
             lon=self.lon_tokyo_tower,
             level=5000)
 
+    def test_4000_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='533935447',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=4000)
+
     def test_2500_tokyo_tower(self):
         self._test_to_meshcode_helper(
             expected_meshcode='533935446',
