@@ -41,10 +41,20 @@ class TestToMeshlevel(unittest.TestCase):
             expected_level=2,
             meshcode='533935')
 
+    def test_8000(self):
+        self._test_to_meshlevel_helper(
+            expected_level=8000,
+            meshcode='5339476')
+
     def test_5000(self):
         self._test_to_meshlevel_helper(
             expected_level=5000,
             meshcode='5339354')
+
+    def test_4000(self):
+        self._test_to_meshlevel_helper(
+            expected_level=4000,
+            meshcode='533947637')
 
     def test_2500(self):
         self._test_to_meshlevel_helper(

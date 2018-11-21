@@ -91,6 +91,13 @@ class TestToMeshcode(unittest.TestCase):
             lon=self.lon_tokyo_tower,
             level=2)
 
+    def test_8000_tokyo_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5339476',
+            lat=self.lat_tokyo_tower,
+            lon=self.lon_tokyo_tower,
+            level=8000)
+
     def test_5000_tokyo_tower(self):
         self._test_to_meshcode_helper(
             expected_meshcode='5339354',
@@ -100,7 +107,7 @@ class TestToMeshcode(unittest.TestCase):
 
     def test_4000_tokyo_tower(self):
         self._test_to_meshcode_helper(
-            expected_meshcode='533935447',
+            expected_meshcode='533947637',
             lat=self.lat_tokyo_tower,
             lon=self.lon_tokyo_tower,
             level=4000)
@@ -175,12 +182,26 @@ class TestToMeshcode(unittest.TestCase):
             lon=self.lon_kyoto_tower,
             level=2)
 
+    def test_8000_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='5235476',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=8000)
+
     def test_5000_kyoto_tower(self):
         self._test_to_meshcode_helper(
             expected_meshcode='5235363',
             lat=self.lat_kyoto_tower,
             lon=self.lon_kyoto_tower,
             level=5000)
+
+    def test_4000_kyoto_tower(self):
+        self._test_to_meshcode_helper(
+            expected_meshcode='523547647',
+            lat=self.lat_kyoto_tower,
+            lon=self.lon_kyoto_tower,
+            level=4000)
 
     def test_2500_kyoto_tower(self):
         self._test_to_meshcode_helper(

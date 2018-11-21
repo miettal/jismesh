@@ -130,7 +130,7 @@ def to_meshcode(lat, lon, level):
 
     def meshcode_20000(lat, lon):
         f = int(rem_lat_40000(lat) / _unit_lat_20000())*2 + int(rem_lon_40000(lon) / _unit_lon_20000()) + 1
-        g = 6
+        g = 5
         return meshcode_40000(lat, lon) + str(f) + str(g)
 
     def meshcode_lv2(lat, lon):
@@ -141,7 +141,7 @@ def to_meshcode(lat, lon, level):
     def meshcode_8000(lat, lon):
         e = int(rem_lat_lv1(lat) / _unit_lat_8000())
         f = int(rem_lon_lv1(lon) / _unit_lon_8000())
-        g = 5
+        g = 6
         return meshcode_lv1(lat, lon) + str(e) + str(f) + str(g)
 
     def meshcode_5000(lat, lon):
@@ -258,10 +258,10 @@ def to_meshlevel(meshcode):
         if meshcode[6:7] in ['1','2','3','4']:
             return 5000
 
-        if meshcode[6:7] == '5':
+        if meshcode[6:7] == '6':
             return 8000
 
-        if meshcode[6:7] == '6':
+        if meshcode[6:7] == '5':
             return 20000
 
     if length == 8:
