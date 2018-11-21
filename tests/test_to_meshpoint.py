@@ -12,6 +12,7 @@ class TestToMeshpoint(unittest.TestCase):
         1: (40/60, 1),
         40000: (40/120, 1/2),
         20000: (40/240, 1/4),
+        16000: (40/300, 1/5),
         2: (5/60, 7.5/60),
         8000: (4/60, 6/60),
         5000: (2.5/60, 3.75/60),
@@ -118,6 +119,13 @@ class TestToMeshpoint(unittest.TestCase):
         self._test_helper_corners(
             meshcode="5339115",
             level=20000,
+            lat_sw=35+1/3,
+            lon_sw=139)
+
+    def test_16000(self):
+        self._test_helper_corners(
+            meshcode="5339007",
+            level=16000,
             lat_sw=35+1/3,
             lon_sw=139)
 
