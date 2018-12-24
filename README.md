@@ -25,7 +25,7 @@ pip install jismesh
 
 ## 緯度経度から地域メッシュコードを求める
 
-メッシュコードに変換する座標点（緯度経度）と変換するメッシュコードの次数を指定します。
+メッシュコードに変換する世界測地系緯度経度と変換するメッシュコードの次数を指定します。
 
 ### 使用例
 ```python
@@ -34,6 +34,7 @@ import jismesh.utils as ju
 # 緯度経度からメッシュコードを求める。
 meshcode = ju.to_meshcode(35.658581, 139.745433, 3)
 print(meshcode)
+53393599
 
 # pandas DataFrame中の緯度経度をメッシュコードに変換する。
 import pandas as pd
