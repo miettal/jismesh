@@ -87,13 +87,7 @@ def to_meshcode(lat, lon, level, astype=str):
         指定次の地域メッシュコード
 
     """
-
-    if not 0 <= lat < 66.66:
-        raise ValueError('the latitude is out of bound.')
-
-    if not 100 <= lon < 180:
-        raise ValueError('the longitude is out of bound.')
-
+    
     # reminder of latitude and longitude by its unit in degree of mesh level.
     rem_lat_lv0 = lambda lat: lat
     rem_lon_lv0 = lambda lon: lon % 100
@@ -127,116 +121,146 @@ def to_meshcode(lat, lon, level, astype=str):
     rem_lon_lv6 = lambda lon: rem_lon_lv5(lon) % _unit_lon_lv6()
 
     def meshcode_lv1(lat, lon):
-        ab = int(rem_lat_lv0(lat) / _unit_lat_lv1())
-        cd = int(rem_lon_lv0(lon) / _unit_lon_lv1())
+        ab = (rem_lat_lv0(lat) // _unit_lat_lv1())
+        cd = rem_lon_lv0(lon) // _unit_lon_lv1()
         return ab*100 + cd
 
     def meshcode_40000(lat, lon):
-        e = int(rem_lat_lv1(lat) / _unit_lat_40000())*2 + int(rem_lon_lv1(lon) / _unit_lon_40000()) + 1
+        e = (rem_lat_lv1(lat) // _unit_lat_40000())*2 + (rem_lon_lv1(lon) // _unit_lon_40000()) + 1
         return meshcode_lv1(lat, lon)*10 + e
 
     def meshcode_20000(lat, lon):
-        f = int(rem_lat_40000(lat) / _unit_lat_20000())*2 + int(rem_lon_40000(lon) / _unit_lon_20000()) + 1
+        f = (rem_lat_40000(lat) // _unit_lat_20000())*2 + (rem_lon_40000(lon) // _unit_lon_20000()) + 1
         g = 5
         return meshcode_40000(lat, lon)*100 + f*10 + g
 
     def meshcode_16000(lat, lon):
-        e = int(rem_lat_lv1(lat) / _unit_lat_16000())*2
-        f = int(rem_lon_lv1(lon) / _unit_lon_16000())*2
+        e = (rem_lat_lv1(lat) // _unit_lat_16000())*2
+        f = (rem_lon_lv1(lon) // _unit_lon_16000())*2
         g = 7
         return meshcode_lv1(lat, lon)*1000 + e*100 + f*10 + g
 
     def meshcode_lv2(lat, lon):
-        e = int(rem_lat_lv1(lat) / _unit_lat_lv2())
-        f = int(rem_lon_lv1(lon) / _unit_lon_lv2())
+        e = (rem_lat_lv1(lat) // _unit_lat_lv2())
+        f = (rem_lon_lv1(lon) // _unit_lon_lv2())
         return meshcode_lv1(lat, lon)*100 + e*10 + f
 
     def meshcode_8000(lat, lon):
-        e = int(rem_lat_lv1(lat) / _unit_lat_8000())
-        f = int(rem_lon_lv1(lon) / _unit_lon_8000())
+        e = (rem_lat_lv1(lat) // _unit_lat_8000())
+        f = (rem_lon_lv1(lon) // _unit_lon_8000())
         g = 6
         return meshcode_lv1(lat, lon)*1000 + e*100 + f*10 + g
 
     def meshcode_5000(lat, lon):
-        g = int(rem_lat_lv2(lat) / _unit_lat_5000())*2 + int(rem_lon_lv2(lon) / _unit_lon_5000()) + 1
+        g = (rem_lat_lv2(lat) // _unit_lat_5000())*2 + (rem_lon_lv2(lon) // _unit_lon_5000()) + 1
         return meshcode_lv2(lat, lon)*10 + g
 
     def meshcode_4000(lat, lon):
-        h = int(rem_lat_8000(lat) / _unit_lat_4000())*2 + int(rem_lon_8000(lon) / _unit_lon_4000()) + 1
+        h = (rem_lat_8000(lat) // _unit_lat_4000())*2 + (rem_lon_8000(lon) // _unit_lon_4000()) + 1
         i = 7
         return meshcode_8000(lat, lon)*100 + h*10 + i
 
     def meshcode_2500(lat, lon):
-        h = int(rem_lat_5000(lat) / _unit_lat_2500())*2 + int(rem_lon_5000(lon) / _unit_lon_2500()) + 1
+        h = (rem_lat_5000(lat) // _unit_lat_2500())*2 + (rem_lon_5000(lon) // _unit_lon_2500()) + 1
         i = 6
         return meshcode_5000(lat, lon)*100 + h*10 + i
 
     def meshcode_2000(lat, lon):
-        g = int(rem_lat_lv2(lat) / _unit_lat_2000())*2
-        h = int(rem_lon_lv2(lon) / _unit_lon_2000())*2
+        g = (rem_lat_lv2(lat) // _unit_lat_2000())*2
+        h = (rem_lon_lv2(lon) // _unit_lon_2000())*2
         i = 5
         return meshcode_lv2(lat, lon)*1000 + g*100 + h*10 + i
 
     def meshcode_lv3(lat, lon):
-        g = int(rem_lat_lv2(lat) / _unit_lat_lv3())
-        h = int(rem_lon_lv2(lon) / _unit_lon_lv3())
+        g = (rem_lat_lv2(lat) // _unit_lat_lv3())
+        h = (rem_lon_lv2(lon) // _unit_lon_lv3())
         return meshcode_lv2(lat, lon)*100 + g*10 + h
 
     def meshcode_lv4(lat, lon):
-        i = int(rem_lat_lv3(lat) / _unit_lat_lv4())*2 + int(rem_lon_lv3(lon) / _unit_lon_lv4()) + 1
+        i = (rem_lat_lv3(lat) // _unit_lat_lv4())*2 + (rem_lon_lv3(lon) // _unit_lon_lv4()) + 1
         return meshcode_lv3(lat, lon)*10 + i
 
     def meshcode_lv5(lat, lon):
-        j = int(rem_lat_lv4(lat) / _unit_lat_lv5())*2 + int(rem_lon_lv4(lon) / _unit_lon_lv5()) + 1
+        j = (rem_lat_lv4(lat) // _unit_lat_lv5())*2 + (rem_lon_lv4(lon) // _unit_lon_lv5()) + 1
         return meshcode_lv4(lat, lon)*10 + j
 
     def meshcode_lv6(lat, lon):
-        k = int(rem_lat_lv5(lat) / _unit_lat_lv6())*2 + int(rem_lon_lv5(lon) / _unit_lon_lv6()) + 1
+        k = (rem_lat_lv5(lat) // _unit_lat_lv6())*2 + (rem_lon_lv5(lon) // _unit_lon_lv6()) + 1
         return meshcode_lv5(lat, lon)*10 + k
 
+    if _np.isscalar(lat):
+        if not 0 <= lat < 66.66:
+            raise ValueError('the latitude is out of bound.')
+    elif isinstance(lat, _np.ndarray):
+        if not (_np.all(0 <= lat) & _np.all(lat < 66.66)):
+            raise ValueError('the latitude is out of bound.')
+    else :
+        raise TypeError('the latitude must be scalar or numpy ndarray.')
+
+    if _np.isscalar(lon):
+        if not 100 <= lon < 180:
+            raise ValueError('the longitude is out of bound.')
+    elif isinstance(lon, _np.ndarray):
+        if not (_np.all(100 <= lon) & _np.all(lon < 180)):
+            raise ValueError('the longitude is out of bound.')
+    else :
+        raise TypeError('the longitude must be scalar or numpy ndarray.')
+
+    if not _np.isscalar(level):
+        raise TypeError('the level must be scalar.')
+
+    if not callable(astype):
+        raise TypeError('the astype must be callable.')
+
     if level == 1:
-        return astype(meshcode_lv1(lat, lon))
+        meshcode = meshcode_lv1(lat, lon)
 
-    if level == 40000:
-        return astype(meshcode_40000(lat, lon))
+    elif level == 40000:
+        meshcode = meshcode_40000(lat, lon)
 
-    if level == 20000:
-        return astype(meshcode_20000(lat, lon))
+    elif level == 20000:
+        meshcode = meshcode_20000(lat, lon)
 
-    if level == 16000:
-        return astype(meshcode_16000(lat, lon))
+    elif level == 16000:
+        meshcode = meshcode_16000(lat, lon)
 
-    if level == 2:
-        return astype(meshcode_lv2(lat, lon))
+    elif level == 2:
+        meshcode = meshcode_lv2(lat, lon)
 
-    if level == 8000:
-        return astype(meshcode_8000(lat, lon))
+    elif level == 8000:
+        meshcode = meshcode_8000(lat, lon)
 
-    if level == 5000:
-        return astype(meshcode_5000(lat, lon))
+    elif level == 5000:
+        meshcode = meshcode_5000(lat, lon)
 
-    if level == 4000:
-        return astype(meshcode_4000(lat, lon))
+    elif level == 4000:
+        meshcode = meshcode_4000(lat, lon)
 
-    if level == 2500:
-        return astype(meshcode_2500(lat, lon))
+    elif level == 2500:
+        meshcode = meshcode_2500(lat, lon)
 
-    if level == 2000:
-        return astype(meshcode_2000(lat, lon))
+    elif level == 2000:
+        meshcode = meshcode_2000(lat, lon)
 
-    if level == 3:
-        return astype(meshcode_lv3(lat, lon))
+    elif level == 3:
+        meshcode = meshcode_lv3(lat, lon)
 
-    if level == 4:
-        return astype(meshcode_lv4(lat, lon))
+    elif level == 4:
+        meshcode = meshcode_lv4(lat, lon)
 
-    if level == 5:
-        return astype(meshcode_lv5(lat, lon))
+    elif level == 5:
+        meshcode = meshcode_lv5(lat, lon)
 
-    if level == 6:
-        return astype(meshcode_lv6(lat, lon))
+    elif level == 6:
+        meshcode = meshcode_lv6(lat, lon)
 
-    raise ValueError("the level is unsupported.")
+    else:
+        raise ValueError("the level is unsupported.")
+
+    if _np.isscalar(meshcode):
+        return astype(int(meshcode))
+    else:
+        return meshcode.astype(_np.int).astype(astype)
 
 def to_meshlevel(meshcode):
     """メッシュコードから次数を算出する。
@@ -260,22 +284,23 @@ def to_meshlevel(meshcode):
                 5次(250m四方):5
                 6次(125m四方):6
     """
-    meshcode = int(meshcode)
+    length = len(str(meshcode))
 
     # 4桁
-    if 10e2 <= meshcode < 10e3:
+    if length == 4:
         return 1
 
     # 5桁
-    if 10e3 <= meshcode < 10e4:
+    if length == 5:
         return 40000
 
     # 6桁
-    if 10e4 <= meshcode < 10e5:
+    if length == 6:
         return 2
 
     # 7桁
-    if 10e5 <= meshcode < 10e6:
+    if length == 7:
+        meshcode = int(meshcode)
         g = meshcode % 10
         if g in [1,2,3,4]:
             return 5000
@@ -290,11 +315,12 @@ def to_meshlevel(meshcode):
             return 16000
 
     # 8桁
-    if 10e6 <= meshcode < 10e7:
+    if length == 8:
         return 3
 
     # 9桁
-    if 10e7 <= meshcode < 10e8:
+    if length == 9:
+        meshcode = int(meshcode)
         i = meshcode % 10
         if i in [1,2,3,4]:
             return 4
@@ -309,13 +335,15 @@ def to_meshlevel(meshcode):
             return 4000
 
     # 10桁
-    if 10e8 <= meshcode < 10e9:
+    if length == 10:
+        meshcode = int(meshcode)
         j = meshcode % 10
         if j in [1,2,3,4]:
             return 5
 
     # 11桁
-    if 10e9 <= meshcode < 10e10:
+    if length == 11:
+        meshcode = int(meshcode)
         k = meshcode % 10
         if k in [1,2,3,4]:
             return 6
