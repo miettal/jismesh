@@ -1,4 +1,6 @@
-*.pyc
+**/*.pyc
 dist/*
 build/*
 .vscode
+**/\.*
+**/*\.xml

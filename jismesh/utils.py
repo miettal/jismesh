@@ -188,9 +188,19 @@ def to_meshcode(lat, lon, level, astype=str):
         k = (rem_lat_lv5(lat) // _unit_lat_lv6())*2 + (rem_lon_lv5(lon) // _unit_lon_lv6()) + 1
         return meshcode_lv5(lat, lon)*10 + k
 
+    if type(level) is not int:
+        raise TypeError('the level must be int.')
+
+    if not _np.isscalar(level):
+        raise TypeError('the level must be scalar.')
+
+    if not callable(astype):
+        raise TypeError('the astype must be callable.')
+
     if _np.isscalar(lat):
         if not 0 <= lat < 66.66:
             raise ValueError('the latitude is out of bound.')
+
     elif isinstance(lat, _np.ndarray):
         if not (_np.all(0 <= lat) & _np.all(lat < 66.66)):
             raise ValueError('the latitude is out of bound.')
@@ -200,17 +210,12 @@ def to_meshcode(lat, lon, level, astype=str):
     if _np.isscalar(lon):
         if not 100 <= lon < 180:
             raise ValueError('the longitude is out of bound.')
+
     elif isinstance(lon, _np.ndarray):
         if not (_np.all(100 <= lon) & _np.all(lon < 180)):
             raise ValueError('the longitude is out of bound.')
     else :
         raise TypeError('the longitude must be scalar or numpy ndarray.')
-
-    if not _np.isscalar(level):
-        raise TypeError('the level must be scalar.')
-
-    if not callable(astype):
-        raise TypeError('the astype must be callable.')
 
     if level == 1:
         meshcode = meshcode_lv1(lat, lon)
@@ -257,10 +262,14 @@ def to_meshcode(lat, lon, level, astype=str):
     else:
         raise ValueError("the level is unsupported.")
 
-    if _np.isscalar(meshcode):
-        return astype(int(meshcode))
-    else:
-        return meshcode.astype(_np.int).astype(astype)
+    def apply_astype(meshcode, astype):
+        if _np.isscalar(meshcode):
+            return astype(int(meshcode))
+
+        else:
+            return meshcode.astype(_np.int).astype(astype)
+    
+    return apply_astype(meshcode, astype)
 
 def to_meshlevel(meshcode):
     """メッシュコードから次数を算出する。
