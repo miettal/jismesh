@@ -1,4 +1,3 @@
-#!/usr/bin/env nosetests
 # -*- coding: utf-8 -*-
 import numpy as np
 from nose.tools import raises, timed, eq_
