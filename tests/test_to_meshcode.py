@@ -159,7 +159,7 @@ def test_normal_vector_astype_numpyint64():
         expect = expect.astype(np.int64)
         _eq_test_helper(expect, input, eq=_eq_vectors)
 
-@timed(1)
+@timed(2)
 def test_performance_vector_lv6_astype_numpyint64():
     num_elements = 1000000
     input = {'lat':np.array([_lat_tokyo_tower]*num_elements), 'lon':np.array([_lon_tokyo_tower]*num_elements), 'astype':np.int64, 'level':6}
