@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import io
+import re
 from setuptools import setup
 from setuptools import find_packages
 
@@ -13,8 +14,11 @@ with io.open('requirements.txt', 'rt', encoding='utf8') as f:
 with io.open('test_requirements.txt', 'rt', encoding='utf8') as f:
     test_requirements = f.read().split('\n')
 
+with io.open('jismesh/__init__.py', 'rt', encoding='utf8') as f:
+    version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
+
 setup(name='jismesh',
-      version='2.1.0',
+      version=version,
       packages=find_packages(),
       description='Utilities for the Japanese regional grid system defined in Japanese Industrial Standards (JIS X 0410 地域メッシュ).',
       long_description=readme,
@@ -22,7 +26,7 @@ setup(name='jismesh',
       author='Haruki Nishikawa',
       author_email='harukinishikawa84@hotmail.com',
       url='https://github.com/hni14/jismesh',
-      download_url='https://github.com/hni14/jismesh/archive/v2.1.0.tar.gz',
+      download_url='https://github.com/hni14/jismesh/archive/v{}.tar.gz'.format(version),
       license = 'MIT',
       platforms='any',
       install_requires=requirements,
