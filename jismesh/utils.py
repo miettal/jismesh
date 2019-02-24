@@ -38,30 +38,61 @@ _unit_lon_lv5 = _functools.lru_cache(1)(lambda: _unit_lon_lv4()/2)
 _unit_lat_lv6 = _functools.lru_cache(1)(lambda: _unit_lat_lv5()/2)
 _unit_lon_lv6 = _functools.lru_cache(1)(lambda: _unit_lon_lv5()/2)
 
-_dict_unit_lat_lon = {
-    1 : (_unit_lat_lv1, _unit_lon_lv1),
-    40000 : (_unit_lat_40000, _unit_lon_40000),
-    20000 : (_unit_lat_20000, _unit_lon_20000),
-    16000 : (_unit_lat_16000, _unit_lon_16000),
-    2 : (_unit_lat_lv2, _unit_lon_lv2),
-    8000 : (_unit_lat_8000, _unit_lon_8000),
-    5000 : (_unit_lat_5000, _unit_lon_5000),
-    4000 : (_unit_lat_4000, _unit_lon_4000),
-    2500 : (_unit_lat_2500, _unit_lon_2500),
-    2000 : (_unit_lat_2000, _unit_lon_2000),
-    3 : (_unit_lat_lv3, _unit_lon_lv3),
-    4 : (_unit_lat_lv4, _unit_lon_lv4),
-    5 : (_unit_lat_lv5, _unit_lon_lv5),
-    6 : (_unit_lat_lv6, _unit_lon_lv6)
-}
+_supported_levels = [1, 40000, 20000, 16000, 2, 8000, 5000, 4000, 2500, 2000, 3, 4, 5, 6]
 
-@_np.vectorize
 def unit_lat(level):
-    return _dict_unit_lat_lon[level][0]()
+    level = _np.atleast_1d(level).astype(_np.int64)
 
-@_np.vectorize
+    if not _np.all(_np.isin(level, _supported_levels)):
+        raise ValueError('Unsupported level is specified.')
+    
+    lat = _np.zeros(level.size)
+    lat[level==1] = _unit_lat_lv1()
+    lat[level==40000] = _unit_lat_40000()
+    lat[level==20000] = _unit_lat_20000()
+    lat[level==16000] = _unit_lat_16000()
+    lat[level==2] = _unit_lat_lv2()
+    lat[level==8000] = _unit_lat_8000()
+    lat[level==5000] = _unit_lat_5000()
+    lat[level==4000] = _unit_lat_4000()
+    lat[level==2500] = _unit_lat_2500()
+    lat[level==2000] = _unit_lat_2000()
+    lat[level==3] = _unit_lat_lv3()
+    lat[level==4] = _unit_lat_lv4()
+    lat[level==5] = _unit_lat_lv5()
+    lat[level==6] = _unit_lat_lv6()
+
+    if lat.size == 1:
+        lat =  _np.asscalar(lat)
+
+    return lat
+
 def unit_lon(level):
-    return _dict_unit_lat_lon[level][1]()
+    level = _np.atleast_1d(level).astype(_np.int64)
+
+    if not _np.all(_np.isin(level, _supported_levels)):
+        raise ValueError('Unsupported level is specified.')
+    
+    lon = _np.zeros(level.size)
+    lon[level==1] = _unit_lon_lv1()
+    lon[level==40000] = _unit_lon_40000()
+    lon[level==20000] = _unit_lon_20000()
+    lon[level==16000] = _unit_lon_16000()
+    lon[level==2] = _unit_lon_lv2()
+    lon[level==8000] = _unit_lon_8000()
+    lon[level==5000] = _unit_lon_5000()
+    lon[level==4000] = _unit_lon_4000()
+    lon[level==2500] = _unit_lon_2500()
+    lon[level==2000] = _unit_lon_2000()
+    lon[level==3] = _unit_lon_lv3()
+    lon[level==4] = _unit_lon_lv4()
+    lon[level==5] = _unit_lon_lv5()
+    lon[level==6] = _unit_lon_lv6()
+
+    if lon.size == 1:
+        lon =  _np.asscalar(lon)
+
+    return lon
 
 def to_meshcode(lat, lon, level, astype=str):
     """緯度経度から指定次の地域メッシュコードを算出する。
@@ -193,8 +224,7 @@ def to_meshcode(lat, lon, level, astype=str):
     lon = _np.atleast_1d(lon).astype(_np.float64)
     level = _np.atleast_1d(level).astype(_np.int64)
 
-    supported_levels = list(_dict_unit_lat_lon.keys())
-    if not _np.all(_np.isin(level, supported_levels)):
+    if not _np.all(_np.isin(level, _supported_levels)):
         raise ValueError('Unsupported level is specified.')
 
     if _np.any(lat < 0) | _np.any(lat >= 66.66):
