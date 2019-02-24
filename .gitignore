@@ -4,3 +4,5 @@ build/*
 .vscode
 **/\.*
 **/*\.xml
+MANIFEST
+jismesh.egg-info

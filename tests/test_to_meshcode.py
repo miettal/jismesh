@@ -55,6 +55,11 @@ def _data_vector(num_elements=10):
         ({'lat':_lat_tokyo_tower, 'lon':np.array([_lon_tokyo_tower]*num_elements), 'level':40000},                              np.array(['53392']*num_elements)),
     ]
 
+def _data_performance(num_elements=1000000):
+    return [
+        ({'lat':np.array([_lat_tokyo_tower]*num_elements), 'lon':np.array([_lon_tokyo_tower]*num_elements), 'astype':np.int64, 'level':6}, np.array([53393599212]*num_elements)),
+    ]
+
 # テストヘルパ
 def _eq_scalars(actual, expect, input):
     eq_(actual, expect, msg='{} as {} but expectes {} as {} when {} is given.'.format(actual, type(actual), expect, type(expect), input))
@@ -148,15 +153,6 @@ def test_normal_vector_astype_numpyint64():
         _eq_test_helper(expect, input, eq=_eq_vectors)
 
 @timed(2)
-def test_performance_vector_lv6_astype_numpyint64():
-    num_elements = 1000000
-    input = {'lat':np.array([_lat_tokyo_tower]*num_elements), 'lon':np.array([_lon_tokyo_tower]*num_elements), 'astype':np.int64, 'level':6}
-    expect = np.array([np.int64(53393599212)]*num_elements)
-    _eq_test_helper(expect, input, eq=_eq_vectors)
-
-@timed(2)
-def test_performance_vector_lv6_astype_str():
-    num_elements = 1000000
-    input = {'lat':np.array([_lat_tokyo_tower]*num_elements), 'lon':np.array([_lon_tokyo_tower]*num_elements), 'astype':str, 'level':6}
-    expect = np.array([str(53393599212)]*num_elements)
-    _eq_test_helper(expect, input, eq=_eq_vectors)
+def test_performance_vector():
+    for input, expect in _data_performance():
+        _eq_test_helper(expect, input, eq=_eq_vectors)

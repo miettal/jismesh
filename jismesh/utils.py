@@ -8,6 +8,13 @@ if _sys.version_info.major < 3:
 else:
     import functools as _functools
 
+def _get_num_digits(t):
+    return _np.floor(_np.log10(t)+1)
+
+def _slice(t, start, stop):
+    num_digits = _get_num_digits(t)
+    return (t % 10 ** (num_digits-start)) // 10 ** (num_digits-stop)
+
 # unit in degree of latitude and longitude for each mesh level. 
 _unit_lat_lv1 = _functools.lru_cache(1)(lambda: 2/3)
 _unit_lon_lv1 = _functools.lru_cache(1)(lambda: 1)
@@ -46,7 +53,7 @@ def unit_lat(level):
     if not _np.all(_np.isin(level, _supported_levels)):
         raise ValueError('Unsupported level is specified.')
     
-    lat = _np.zeros(level.size)
+    lat = _np.zeros(level.size, dtype=_np.float64)
     lat[level==1] = _unit_lat_lv1()
     lat[level==40000] = _unit_lat_40000()
     lat[level==20000] = _unit_lat_20000()
@@ -73,7 +80,7 @@ def unit_lon(level):
     if not _np.all(_np.isin(level, _supported_levels)):
         raise ValueError('Unsupported level is specified.')
     
-    lon = _np.zeros(level.size)
+    lon = _np.zeros(level.size, dtype=_np.float64)
     lon[level==1] = _unit_lon_lv1()
     lon[level==40000] = _unit_lon_40000()
     lon[level==20000] = _unit_lon_20000()
@@ -234,7 +241,7 @@ def to_meshcode(lat, lon, level, astype=str):
         raise ValueError('The longitude is out of bound(100 <= longitude < 180).')
 
     meshcode_shape = max(lat.size, lon.size, level.size)
-    meshcode = _np.zeros(meshcode_shape)
+    meshcode = _np.zeros(meshcode_shape, dtype=_np.float64)
     
     if _np.any(_np.isin(level, 1)):
         meshcode += meshcode_lv1(lat, lon) * (level == 1)
@@ -286,7 +293,6 @@ def to_meshcode(lat, lon, level, astype=str):
 
     return meshcode
 
-@_np.vectorize
 def to_meshlevel(meshcode):
     """メッシュコードから次数を算出する。
 
@@ -309,71 +315,39 @@ def to_meshlevel(meshcode):
                 5次(250m四方):5
                 6次(125m四方):6
     """
-    length = len(str(meshcode))
+    meshcode = _np.array(meshcode).astype(_np.int64)
+    level = _np.full(meshcode.shape, _np.int64(-1))
+    num_digits = _get_num_digits(meshcode)
 
-    # 4桁
-    if length == 4:
-        return 1
+    #ab = _slice(meshcode, 0, 2)
+    #cd = _slice(meshcode, 2, 4)
+    #e = _slice(meshcode, 4, 5)
+    #f = _slice(meshcode, 5, 6)
+    g = _slice(meshcode, 6, 7)
+    #h = _slice(meshcode, 7, 8)
+    i = _slice(meshcode, 8, 9)
+    j = _slice(meshcode, 9, 10)
+    k = _slice(meshcode, 10, 11)
 
-    # 5桁
-    if length == 5:
-        return 40000
+    level[(num_digits==4)] = 1
+    level[(num_digits==5)] = 40000
+    level[(num_digits==6)] = 2
+    level[(num_digits==7) & (_np.isin(g, [1,2,3,4]))] = 5000
+    level[(num_digits==7) & (g == 6)] = 8000
+    level[(num_digits==7) & (g == 5)] = 20000
+    level[(num_digits==7) & (g == 7)] = 16000
+    level[(num_digits==8)] = 3
+    level[(num_digits==9) & (_np.isin(i, [1,2,3,4]))] = 4
+    level[(num_digits==9) & (i == 5)] = 2000
+    level[(num_digits==9) & (i == 6)] = 2500
+    level[(num_digits==9) & (i == 7)] = 4000
+    level[(num_digits==10) & (_np.isin(j, [1,2,3,4]))] = 5
+    level[(num_digits==11) & (_np.isin(k, [1,2,3,4]))] = 6
 
-    # 6桁
-    if length == 6:
-        return 2
+    if level.size == 1:
+        level =  _np.asscalar(level)
 
-    # 7桁
-    if length == 7:
-        meshcode = int(meshcode)
-        g = meshcode % 10
-        if g in [1,2,3,4]:
-            return 5000
-
-        if g == 6:
-            return 8000
-
-        if g == 5:
-            return 20000
-
-        if g == 7:
-            return 16000
-
-    # 8桁
-    if length == 8:
-        return 3
-
-    # 9桁
-    if length == 9:
-        meshcode = int(meshcode)
-        i = meshcode % 10
-        if i in [1,2,3,4]:
-            return 4
-
-        if i == 5:
-            return 2000
-
-        if i == 6:
-            return 2500
-
-        if i == 7:
-            return 4000
-
-    # 10桁
-    if length == 10:
-        meshcode = int(meshcode)
-        j = meshcode % 10
-        if j in [1,2,3,4]:
-            return 5
-
-    # 11桁
-    if length == 11:
-        meshcode = int(meshcode)
-        k = meshcode % 10
-        if k in [1,2,3,4]:
-            return 6
-
-    raise ValueError('the meshcode is unsupported.')
+    return level
 
 def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     """地域メッシュコードから緯度経度を算出する。
@@ -404,19 +378,15 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     """
     meshcode = _np.array(meshcode).astype(_np.int64)
 
-    def slice(t, start, stop):
-        num_digits = _np.floor(_np.log10(t)+1)
-        return (t % 10 ** (num_digits-start)) // 10 ** (num_digits-stop)
-
-    ab = slice(meshcode, 0, 2)
-    cd = slice(meshcode, 2, 4)
-    e = slice(meshcode, 4, 5)
-    f = slice(meshcode, 5, 6)
-    g = slice(meshcode, 6, 7)
-    h = slice(meshcode, 7, 8)
-    i = slice(meshcode, 8, 9)
-    j = slice(meshcode, 9, 10)
-    k = slice(meshcode, 10, 11)
+    ab = _slice(meshcode, 0, 2)
+    cd = _slice(meshcode, 2, 4)
+    e = _slice(meshcode, 4, 5)
+    f = _slice(meshcode, 5, 6)
+    g = _slice(meshcode, 6, 7)
+    h = _slice(meshcode, 7, 8)
+    i = _slice(meshcode, 8, 9)
+    j = _slice(meshcode, 9, 10)
+    k = _slice(meshcode, 10, 11)
 
     level = to_meshlevel(meshcode)
 
@@ -524,7 +494,6 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     lon +=  unit_lon(level)*lon_multiplier
 
     return lat, lon
-
 
 @_np.vectorize
 def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level):
