@@ -71,18 +71,6 @@ def _eq_test_helper(expect, input, eq, target=ju.to_meshcode):
 def test_error_unsupported_level():
     ju.to_meshcode(lat=_lat_tokyo_tower, lon=_lon_tokyo_tower, level=0)
 
-@raises(TypeError)
-def test_error_invalid_level_type():
-    ju.to_meshcode(lat=_lat_tokyo_tower, lon=_lon_tokyo_tower, level=str(1))
-
-@raises(TypeError)
-def test_error_invalid_latitude_type():
-    ju.to_meshcode(lat=str(_lat_tokyo_tower), lon=_lon_tokyo_tower, level=1)
-
-@raises(TypeError)
-def test_error_invalid_longitude_type():
-    ju.to_meshcode(lat=_lat_tokyo_tower, lon=str(_lon_tokyo_tower), level=1)
-
 @raises(ValueError)
 def test_error_scalar_invalid_latitude_min():
     ju.to_meshcode(lat=-0.1, lon=_lon_tokyo_tower, level=1)

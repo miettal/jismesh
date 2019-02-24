@@ -89,7 +89,6 @@ def to_meshcode(lat, lon, level, astype=str):
         指定次の地域メッシュコード
 
     """
-    
     # reminder of latitude and longitude by its unit in degree of mesh level.
     rem_lat_lv0 = lambda lat: lat
     rem_lon_lv0 = lambda lon: lon % 100
@@ -190,88 +189,72 @@ def to_meshcode(lat, lon, level, astype=str):
         k = (rem_lat_lv5(lat) // _unit_lat_lv6())*2 + (rem_lon_lv5(lon) // _unit_lon_lv6()) + 1
         return meshcode_lv5(lat, lon)*10 + k
 
-    if type(level) is not int:
-        raise TypeError('the level must be int.')
+    lat = _np.atleast_1d(lat).astype(_np.float64)
+    lon = _np.atleast_1d(lon).astype(_np.float64)
+    level = _np.atleast_1d(level).astype(_np.int64)
 
-    if not _np.isscalar(level):
-        raise TypeError('the level must be scalar.')
+    supported_levels = list(_dict_unit_lat_lon.keys())
+    if not _np.all(_np.isin(level, supported_levels)):
+        raise ValueError('Unsupported level is specified.')
 
-    if not callable(astype):
-        raise TypeError('the astype must be callable.')
+    if _np.any(lat < 0) | _np.any(lat >= 66.66):
+        raise ValueError('The latitude is out of bound(0 <= latitude < 66.66).')
 
-    if _np.isscalar(lat):
-        if not 0 <= lat < 66.66:
-            raise ValueError('the latitude is out of bound.')
+    if _np.any(lon < 100) | _np.any(lon >= 180):
+        raise ValueError('The longitude is out of bound(100 <= longitude < 180).')
 
-    elif isinstance(lat, _np.ndarray):
-        if not (_np.all(0 <= lat) & _np.all(lat < 66.66)):
-            raise ValueError('the latitude is out of bound.')
-    else :
-        raise TypeError('the latitude must be scalar or numpy ndarray.')
-
-    if _np.isscalar(lon):
-        if not 100 <= lon < 180:
-            raise ValueError('the longitude is out of bound.')
-
-    elif isinstance(lon, _np.ndarray):
-        if not (_np.all(100 <= lon) & _np.all(lon < 180)):
-            raise ValueError('the longitude is out of bound.')
-    else :
-        raise TypeError('the longitude must be scalar or numpy ndarray.')
-
-    if level == 1:
-        meshcode = meshcode_lv1(lat, lon)
-
-    elif level == 40000:
-        meshcode = meshcode_40000(lat, lon)
-
-    elif level == 20000:
-        meshcode = meshcode_20000(lat, lon)
-
-    elif level == 16000:
-        meshcode = meshcode_16000(lat, lon)
-
-    elif level == 2:
-        meshcode = meshcode_lv2(lat, lon)
-
-    elif level == 8000:
-        meshcode = meshcode_8000(lat, lon)
-
-    elif level == 5000:
-        meshcode = meshcode_5000(lat, lon)
-
-    elif level == 4000:
-        meshcode = meshcode_4000(lat, lon)
-
-    elif level == 2500:
-        meshcode = meshcode_2500(lat, lon)
-
-    elif level == 2000:
-        meshcode = meshcode_2000(lat, lon)
-
-    elif level == 3:
-        meshcode = meshcode_lv3(lat, lon)
-
-    elif level == 4:
-        meshcode = meshcode_lv4(lat, lon)
-
-    elif level == 5:
-        meshcode = meshcode_lv5(lat, lon)
-
-    elif level == 6:
-        meshcode = meshcode_lv6(lat, lon)
-
-    else:
-        raise ValueError("the level is unsupported.")
-
-    def apply_astype(meshcode, astype):
-        if _np.isscalar(meshcode):
-            return astype(int(meshcode))
-
-        else:
-            return meshcode.astype(_np.int).astype(astype)
+    meshcode_shape = max(lat.size, lon.size, level.size)
+    meshcode = _np.zeros(meshcode_shape)
     
-    return apply_astype(meshcode, astype)
+    if _np.any(_np.isin(level, 1)):
+        meshcode += meshcode_lv1(lat, lon) * (level == 1)
+
+    if _np.any(_np.isin(level, 40000)):
+        meshcode += meshcode_40000(lat, lon) * (level == 40000)
+    
+    if _np.any(_np.isin(level, 20000)):
+        meshcode += meshcode_20000(lat, lon) * (level == 20000)
+    
+    if _np.any(_np.isin(level, 16000)):
+        meshcode += meshcode_16000(lat, lon) * (level == 16000)
+
+    if _np.any(_np.isin(level, 2)):
+        meshcode += meshcode_lv2(lat, lon) * (level == 2)
+
+    if _np.any(_np.isin(level, 8000)):
+        meshcode += meshcode_8000(lat, lon) * (level == 8000)
+
+    if _np.any(_np.isin(level, 5000)):
+        meshcode += meshcode_5000(lat, lon) * (level == 5000)
+
+    if _np.any(_np.isin(level, 4000)):
+        meshcode += meshcode_4000(lat, lon) * (level == 4000)
+
+    if _np.any(_np.isin(level, 2500)):
+        meshcode += meshcode_2500(lat, lon) * (level == 2500)
+
+    if _np.any(_np.isin(level, 2000)):
+        meshcode += meshcode_2000(lat, lon) * (level == 2000)
+
+    if _np.any(_np.isin(level, 3)):
+        meshcode += meshcode_lv3(lat, lon) * (level == 3)
+
+    if _np.any(_np.isin(level, 4)):
+        meshcode += meshcode_lv4(lat, lon) * (level == 4)
+
+    if _np.any(_np.isin(level, 5)):
+        meshcode += meshcode_lv5(lat, lon) * (level == 5)
+
+    if _np.any(_np.isin(level, 6)):
+        meshcode += meshcode_lv6(lat, lon) * (level == 6)
+    
+    meshcode = meshcode.astype(_np.int64)
+    meshcode = meshcode.astype(astype)
+
+    if meshcode.size == 1:
+        meshcode =  _np.asscalar(meshcode)
+
+    return meshcode
 
 @_np.vectorize
 def to_meshlevel(meshcode):
@@ -404,6 +387,7 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     i = slice(meshcode, 8, 9)
     j = slice(meshcode, 9, 10)
     k = slice(meshcode, 10, 11)
+
     level = to_meshlevel(meshcode)
 
     target_lv1 = level == 1
