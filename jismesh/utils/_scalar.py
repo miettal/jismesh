@@ -61,7 +61,7 @@ def unit_lat(level):
 def unit_lon(level):
     return _dict_unit_lat_lon[level][1]()
 
-def to_meshcode(lat, lon, level):
+def to_meshcode(lat, lon, level, astype):
     """緯度経度から指定次の地域メッシュコードを算出する。
 
     Args:
@@ -194,46 +194,46 @@ def to_meshcode(lat, lon, level):
         return meshcode_lv5(lat, lon) + str(k)
 
     if level == 1:
-        return meshcode_lv1(lat, lon)
+        return astype(meshcode_lv1(lat, lon))
 
     if level == 40000:
-        return meshcode_40000(lat, lon)
+        return astype(meshcode_40000(lat, lon))
 
     if level == 20000:
-        return meshcode_20000(lat, lon)
+        return astype(meshcode_20000(lat, lon))
 
     if level == 16000:
-        return meshcode_16000(lat, lon)
+        return astype(meshcode_16000(lat, lon))
 
     if level == 2:
-        return meshcode_lv2(lat, lon)
+        return astype(meshcode_lv2(lat, lon))
 
     if level == 8000:
-        return meshcode_8000(lat, lon)
+        return astype(meshcode_8000(lat, lon))
 
     if level == 5000:
-        return meshcode_5000(lat, lon)
+        return astype(meshcode_5000(lat, lon))
 
     if level == 4000:
-        return meshcode_4000(lat, lon)
+        return astype(meshcode_4000(lat, lon))
 
     if level == 2500:
-        return meshcode_2500(lat, lon)
+        return astype(meshcode_2500(lat, lon))
 
     if level == 2000:
-        return meshcode_2000(lat, lon)
+        return astype(meshcode_2000(lat, lon))
 
     if level == 3:
-        return meshcode_lv3(lat, lon)
+        return astype(meshcode_lv3(lat, lon))
 
     if level == 4:
-        return meshcode_lv4(lat, lon)
+        return astype(meshcode_lv4(lat, lon))
 
     if level == 5:
-        return meshcode_lv5(lat, lon)
+        return astype(meshcode_lv5(lat, lon))
 
     if level == 6:
-        return meshcode_lv6(lat, lon)
+        return astype(meshcode_lv6(lat, lon))
 
     raise ValueError("the level is unsupported.")
 
@@ -259,8 +259,8 @@ def to_meshlevel(meshcode):
                 5次(250m四方):5
                 6次(125m四方):6
     """
-
-    length = len(str(meshcode))
+    meshcode = str(meshcode)
+    length = len(meshcode)
     if length == 4:
         return 1
 
@@ -307,7 +307,7 @@ def to_meshlevel(meshcode):
         if meshcode[10:11] in ['1','2','3','4']:
             return 6
 
-    raise ValueError('the meshcode is unsupported.')
+    return -1
 
 def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     """地域メッシュコードから緯度経度を算出する。
@@ -336,6 +336,7 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
         lon: 世界測地系の経度(度単位)
 
     """
+    meshcode = str(meshcode)
 
     def mesh_cord(func_higher_cord, func_unit_cord, func_multiplier):
         return func_higher_cord() + func_unit_cord() * func_multiplier()
@@ -810,7 +811,7 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
 
     raise ValueError("the level is unsupported.")
 
-def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level):
+def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level, astype):
     to_unit_lat = unit_lat(to_level)
     to_unit_lon = unit_lon(to_level)
     to_lats = _np.arange(lat_s, lat_n, to_unit_lat)
@@ -818,7 +819,7 @@ def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level):
 
     for to_lat in to_lats:
         for to_lon in to_lons:
-            yield to_meshcode(to_lat, to_lon, to_level)
+            yield to_meshcode(to_lat, to_lon, to_level, astype)
 
 def to_envelope(meshcode_sw, meshcode_ne):
     level_sw = to_meshlevel(meshcode_sw)
@@ -832,7 +833,7 @@ def to_envelope(meshcode_sw, meshcode_ne):
     lat_s, lon_w = to_meshpoint(meshcode_sw, 0+mergin_lat, 0+mergin_lon)
     lat_n, lon_e = to_meshpoint(meshcode_ne, 1, 1)
 
-    return _make_envelope(lat_s, lon_w, lat_n, lon_e, level_sw)
+    return _make_envelope(lat_s, lon_w, lat_n, lon_e, level_sw, type(meshcode_sw))
 
 def to_intersects(meshcode, to_level):
     to_unit_lat = unit_lat(to_level)
@@ -848,4 +849,4 @@ def to_intersects(meshcode, to_level):
     from_lat_s, from_lon_w = to_meshpoint(meshcode, 0+mergin_lat, 0+mergin_lon)
     from_lat_n, from_lon_e = to_meshpoint(meshcode, 1, 1)
 
-    return _make_envelope(from_lat_s, from_lon_w, from_lat_n, from_lon_e, to_level)
+    return _make_envelope(from_lat_s, from_lon_w, from_lat_n, from_lon_e, to_level, type(meshcode))
