@@ -61,7 +61,7 @@ def unit_lat(level):
 def unit_lon(level):
     return _dict_unit_lat_lon[level][1]()
 
-def to_meshcode(lat, lon, level, astype=str):
+def to_meshcode(lat, lon, level, astype):
     """緯度経度から指定次の地域メッシュコードを算出する。
 
     Args:
@@ -811,7 +811,7 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
 
     raise ValueError("the level is unsupported.")
 
-def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level):
+def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level, astype):
     to_unit_lat = unit_lat(to_level)
     to_unit_lon = unit_lon(to_level)
     to_lats = _np.arange(lat_s, lat_n, to_unit_lat)
@@ -819,7 +819,7 @@ def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level):
 
     for to_lat in to_lats:
         for to_lon in to_lons:
-            yield to_meshcode(to_lat, to_lon, to_level)
+            yield to_meshcode(to_lat, to_lon, to_level, astype)
 
 def to_envelope(meshcode_sw, meshcode_ne):
     level_sw = to_meshlevel(meshcode_sw)
@@ -833,7 +833,7 @@ def to_envelope(meshcode_sw, meshcode_ne):
     lat_s, lon_w = to_meshpoint(meshcode_sw, 0+mergin_lat, 0+mergin_lon)
     lat_n, lon_e = to_meshpoint(meshcode_ne, 1, 1)
 
-    return _make_envelope(lat_s, lon_w, lat_n, lon_e, level_sw)
+    return _make_envelope(lat_s, lon_w, lat_n, lon_e, level_sw, type(meshcode_sw))
 
 def to_intersects(meshcode, to_level):
     to_unit_lat = unit_lat(to_level)
@@ -849,4 +849,4 @@ def to_intersects(meshcode, to_level):
     from_lat_s, from_lon_w = to_meshpoint(meshcode, 0+mergin_lat, 0+mergin_lon)
     from_lat_n, from_lon_e = to_meshpoint(meshcode, 1, 1)
 
-    return _make_envelope(from_lat_s, from_lon_w, from_lat_n, from_lon_e, to_level)
+    return _make_envelope(from_lat_s, from_lon_w, from_lat_n, from_lon_e, to_level, type(meshcode))

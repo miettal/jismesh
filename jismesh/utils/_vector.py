@@ -101,7 +101,7 @@ def unit_lon(level):
 
     return lon
 
-def to_meshcode(lat, lon, level, astype=str):
+def to_meshcode(lat, lon, level, astype):
     """緯度経度から指定次の地域メッシュコードを算出する。
 
     Args:
@@ -494,46 +494,3 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     lon +=  unit_lon(level)*lon_multiplier
 
     return lat, lon
-
-@_np.vectorize
-def _make_envelope(lat_s, lon_w, lat_n, lon_e, to_level):
-    to_unit_lat = unit_lat(to_level)
-    to_unit_lon = unit_lon(to_level)
-    to_lats = _np.arange(lat_s, lat_n, to_unit_lat)
-    to_lons = _np.arange(lon_w, lon_e, to_unit_lon)
-
-    for to_lat in to_lats:
-        for to_lon in to_lons:
-            yield to_meshcode(to_lat, to_lon, to_level)
-
-@_np.vectorize
-def to_envelope(meshcode_sw, meshcode_ne):
-    level_sw = to_meshlevel(meshcode_sw)
-    level_ne = to_meshlevel(meshcode_ne)
-    if level_sw != level_ne:
-        raise ValueError("the level must be the same for meshcode_sw and meshcode_ne.")
-
-    mergin_lat = 0.5
-    mergin_lon = 0.5
-
-    lat_s, lon_w = to_meshpoint(meshcode_sw, 0+mergin_lat, 0+mergin_lon)
-    lat_n, lon_e = to_meshpoint(meshcode_ne, 1, 1)
-
-    return _make_envelope(lat_s, lon_w, lat_n, lon_e, level_sw)
-
-@_np.vectorize
-def to_intersects(meshcode, to_level):
-    to_unit_lat = unit_lat(to_level)
-    to_unit_lon = unit_lon(to_level)
-
-    from_level = to_meshlevel(meshcode)
-    from_unit_lat = unit_lat(from_level)
-    from_unit_lon = unit_lon(from_level)
-
-    mergin_lat = (to_unit_lat/from_unit_lat)/2 if to_unit_lat <= from_unit_lat else 0.5
-    mergin_lon = (to_unit_lon/from_unit_lon)/2 if to_unit_lon <= from_unit_lon else 0.5
-
-    from_lat_s, from_lon_w = to_meshpoint(meshcode, 0+mergin_lat, 0+mergin_lon)
-    from_lat_n, from_lon_e = to_meshpoint(meshcode, 1, 1)
-
-    return _make_envelope(from_lat_s, from_lon_w, from_lat_n, from_lon_e, to_level)

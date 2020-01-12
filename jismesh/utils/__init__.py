@@ -1,9 +1,8 @@
 from __future__ import absolute_import
 
 import numpy as _np
-
-from . import vector as _vector
-from . import scalar as _scalar
+from . import _vector
+from . import _scalar
 
 def unit_lat(level):
     if _np.isscalar(level):
@@ -21,7 +20,8 @@ def unit_lon(level):
     
     return unit_lon(level)
 
-def to_meshcode(lat, lon, level, astype=str):
+def to_meshcode(lat, lon, level, astype=_np.int64):
+        
     if _np.isscalar(lat) and _np.isscalar(lon) and _np.isscalar(level):
         to_meshcode = _scalar.to_meshcode
     else:
@@ -46,18 +46,19 @@ def to_meshpoint(meshcode, lat_multiplier, lon_multiplier):
     return to_meshpoint(meshcode, lat_multiplier, lon_multiplier)
 
 def to_envelope(meshcode_sw, meshcode_ne):
-    if _np.isscalar(meshcode_sw) and _np.isscalar(meshcode_sw):
-        to_envelope = _scalar.to_envelope
-    else:
-        to_envelope = _vector.to_envelope
+    assert _np.isscalar(meshcode_sw)
+    assert _np.isscalar(meshcode_sw)
+    assert type(meshcode_sw) == type(meshcode_ne)
+    
+    to_envelope = _scalar.to_envelope
     
     return to_envelope(meshcode_sw, meshcode_ne)
 
 def to_intersects(meshcode, to_level):
-    if _np.isscalar(meshcode) and _np.isscalar(to_level):
-        to_intersects = _scalar.to_intersects
-    else:
-        to_intersects = _vector.to_intersects
+    assert _np.isscalar(meshcode)
+    assert _np.isscalar(to_level)
+    
+    to_intersects = _scalar.to_intersects
     
     return to_intersects(meshcode, to_level)
     

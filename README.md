@@ -4,7 +4,7 @@
 
 ## 対応地域メッシュコード
 - 1次(標準地域メッシュ 80km四方): 1
-- 40倍(拡張地域メッシュ 40km四方): 40000
+- 40倍(拡張統合地域メッシュ 40km四方): 40000
 - 20倍(拡張統合地域メッシュ 20km四方): 20000
 - 16倍(拡張統合地域メッシュ 16km四方): 16000
 - 2次(標準地域メッシュ 10km四方): 2
@@ -44,7 +44,7 @@ print(df)
 0  35.658581  139.745433
 1  34.987574  135.759363
 
-df['meshcode'] = df.apply(lambda r: ju.to_meshcode(r.lat, r.lon, 3), axis=1).apply(pd.Series)
+df['meshcode'] = ju.to_meshcode(df.lat, df.lon, 3)
 print(df)
          lat         lon  meshcode
 0  35.658581  139.745433  53393599
@@ -61,19 +61,19 @@ print(df)
 import jismesh.utils as ju
 
 # メッシュコードの次数を求める。
-meshlevel = ju.to_meshlevel('53393599')
+meshlevel = ju.to_meshlevel(53393599)
 print(meshlevel)
 3
 
 # pandas DataFrame中のメッシュコードを次数に変換する。
 import pandas as pd
-df = pd.DataFrame({'meshcode': ['53393599', '52353680']})
+df = pd.DataFrame({'meshcode': [53393599, 52353680]})
 print(df)
    meshcode
 0  53393599
 1  52353680
 
-df['level'] = df.meshcode.apply(ju.to_meshlevel).apply(pd.Series)
+df['level'] = ju.to_meshlevel(df.meshcode)
 print(df)
    meshcode  level
 0  53393599      3
@@ -92,34 +92,34 @@ print(df)
 import jismesh.utils as ju
     
 # 南西端の緯度経度を求める。
-lat_sw, lon_sw = ju.to_meshpoint('53393599', 0, 0)
+lat_sw, lon_sw = ju.to_meshpoint(53393599, 0, 0)
 print(lat_sw, lon_sw)
 35.6583333333 139.7375
     
 # 北東端の緯度経度を求める。
-lat_ne, lon_ne = ju.to_meshpoint('53393599', 1, 1)
+lat_ne, lon_ne = ju.to_meshpoint(53393599, 1, 1)
 print(lat_ne, lon_ne)
 35.6666666667 139.75
     
 # 中心点の緯度経度を求める。
-lat_c, lon_c = ju.to_meshpoint('53393599', 0.5, 0.5)
+lat_c, lon_c = ju.to_meshpoint(53393599, 0.5, 0.5)
 print(lat_c, lon_c)
 35.6625 139.74375
 
 # 東隣接メッシュの中心点の緯度経度を求める。
-lat_east_neighbor_c, lon_east_neighbor_c = ju.to_meshpoint('53393599', 0.5, 1.5)
+lat_east_neighbor_c, lon_east_neighbor_c = ju.to_meshpoint(53393599, 0.5, 1.5)
 print(lat_east_neighbor_c, lon_east_neighbor_c)
 35.6625 139.75625
 
 # pandas DataFrame中のメッシュコードを中心点緯度経度に変換する。
 import pandas as pd
-df = pd.DataFrame({'meshcode': ['53393599', '52353680']})
+df = pd.DataFrame({'meshcode': [53393599, 52353680]})
 print(df)
    meshcode
 0  53393599
 1  52353680
 
-df[['lat', 'lon']] = df.meshcode.apply(ju.to_meshpoint, lat_multiplier=0.5, lon_multiplier=0.5).apply(pd.Series)
+df['lat'], df['lon'] = ju.to_meshpoint(df.meshcode, lat_multiplier=0.5, lon_multiplier=0.5) 
 print(df)
    meshcode      lat        lon
 0  53393599  35.6625  139.74375
@@ -133,7 +133,7 @@ print(df)
 import jismesh.utils as ju
     
 # 交差するメッシュコードを求める。
-generator_intersects = ju.to_intersects('53394611', 4)
+generator_intersects = ju.to_intersects(53394611, 4)
 
 for meshcode in generator_intersects:
 	print(meshcode)
