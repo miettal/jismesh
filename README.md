@@ -144,20 +144,3 @@ for meshcode in generator_intersects:
 533946114
 ```
 
-## TIPS
-lruキャッシュによる高速化
-```python
-import jismesh.utils as ju
-from functools import lru_cache
-
-# lruキャッシュ無効な関数の実行速度
-timeit ju.to_meshcode(35.6625, 139.75625, 3)
-12.6 µs ± 908 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-
-# lruキャッシュ有効な関数の実行速度
-cached_to_meshcode = lru_cache(10)(ju.to_meshcode)
-
-timeit cached_to_meshcode(35.6625, 139.75625, 3)
-
-192 ns ± 3.5 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
-```
